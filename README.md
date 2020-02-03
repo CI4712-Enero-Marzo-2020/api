@@ -130,12 +130,12 @@ _para agregar un libro a base de datos._
 http://127.0.0.1:5000/add?name=Quijote&author=Cervantes Miguel&published=1605
 ```
 
-_para obtener el libro agregado_
+_para obtener el libro agregado por su id._
 ```
 http://127.0.0.1:5000/get/1
 ```
 
-_para obtener todos los libros agregados_
+_para obtener todos los libros agregados._
 ```
 http://127.0.0.1:5000/getall
 ```

@@ -27,9 +27,10 @@ sudo apt-get install sqlite3
 ```
 
 **virtualenv**
+
 _instala el entorno virtual con_
 ```
-_pip install virtualenv_
+pip install virtualenv
 ```
 
 _crea un directorio para alojarlo con_

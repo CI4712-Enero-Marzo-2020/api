@@ -1,4 +1,4 @@
-# Título del Proyecto
+# Backlog Scrum API
 
 _API Rest para dar servicio a Backlog Scrum en el marco de la materia CI4712_
 
@@ -27,22 +27,29 @@ sudo apt-get install sqlite3
 ```
 
 _**virtualenv**_
+_instala el entorno virtual con_
 ```
-#instala el entorno virtual con
-
 _pip install virtualenv_
+```
 
-#crea un directorio para alojarlo
+_crea un directorio para alojarlo con_
+```
 mkdir virtualenvs
 cd virtualenvs
+```
 
-#instala el entorno
+_instala el entorno_
+```
 virtualenv env
+```
 
-#para activarlo utiliza
+_para activarlo utiliza_
+```
 source env/bin/activate
+```
 
-#para desactivarlo utiliza
+_para desactivarlo utiliza_
+```
 source env/bin/deactivate
 ```
 
@@ -91,7 +98,7 @@ _reservado del sistema, se autogeneraran en cada migracion y actualizacion de la
 _en este directorio se aloja el file **environment.py** el cual contiene algunas variables globales que marcan la raiz del proyecto, la ruta de la base de datos y el seteo del tipo de configuracion a usar(development de momento)._
 
 #### app.py, config.py, manage.py
-_files en la raiz que inicializan nuestro api.
+_files en la raiz que inicializan nuestro api._
 
 ### Comandos importantes
 

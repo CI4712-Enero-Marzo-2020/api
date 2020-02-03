@@ -123,6 +123,24 @@ _para actualizar base de datos **USAR DESPUES DE CREAR MIGRACIONES**_
 python manage.py db upgrade                                                                                                  
 ```
 
+## Ejemplos de servicios de example_app
+
+_para agregar un libro a base de datos._
+```
+http://127.0.0.1:5000/add?name=Quijote&author=Cervantes Miguel&published=1605
+```
+
+_para obtener el libro agregado_
+```
+http://127.0.0.1:5000/get/1
+```
+
+_para obtener todos los libros agregados_
+```
+http://127.0.0.1:5000/getall
+```
+
+
 ## Despliegue 📦
 
 _Por definir_

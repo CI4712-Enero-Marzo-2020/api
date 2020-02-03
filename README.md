@@ -118,7 +118,7 @@ _para crear migracion **USAR CADA VEZ QUE GENERAN O MODIFICAN UNA TABLA**_
 python manage.py db migrate                                                                                                  
 ```
 
-_para actualizar base de datos **USAR DESPUES DE CREAR MIGRACIONES*_
+_para actualizar base de datos **USAR DESPUES DE CREAR MIGRACIONES**_
 ```
 python manage.py db upgrade                                                                                                  
 ```

@@ -26,7 +26,7 @@ sudo apt update
 sudo apt-get install sqlite3
 ```
 
-_**virtualenv**_
+**virtualenv**
 _instala el entorno virtual con_
 ```
 _pip install virtualenv_

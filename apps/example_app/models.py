@@ -8,13 +8,11 @@ class Book(db.Model):
     name = db.Column(db.String())
     author = db.Column(db.String())
     published = db.Column(db.String())
-    hola = db.Column(db.String())
 
-    def __init__(self, name, author, published, hola):
+    def __init__(self, name, author, published):
         self.name = name
         self.author = author
         self.published = published
-        self.hola = hola
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -25,5 +23,4 @@ class Book(db.Model):
             'name': self.name,
             'author': self.author,
             'published':self.published,
-            'hola':self.hola
         }

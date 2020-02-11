@@ -1,18 +1,34 @@
-import os
+import os, enum
 from app import db
 
-class Book(db.Model):
-    __tablename__ = 'books'
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80))
+    projects = db.relationship('Project', backref='user') 
+
+
+class ProjectStatus(enum.Enum):
+    completed = 'completed'
+    paused = 'paused'
+    active = 'active'
+
+
+class Project(db.Model):
+    __tablename__ = 'projects'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String())
-    author = db.Column(db.String())
-    published = db.Column(db.String())
+    description = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    status = db.Column(
+        db.Enum(ProjectStatus), 
+        default= ProjectStatus.active,
+        nullable=False
+    )
 
-    def __init__(self, name, author, published):
-        self.name = name
-        self.author = author
-        self.published = published
+    def __init__(self,user_id,description):
+        self.description = description
+        self.user_id = user_id
+        self.status = ProjectStatus.active
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -20,7 +36,7 @@ class Book(db.Model):
     def serialize(self):
         return {
             'id': self.id, 
-            'name': self.name,
-            'author': self.author,
-            'published':self.published,
+            'description': self.description,
+            'user_id': self.user_id,
+            'status':self.status,
         }

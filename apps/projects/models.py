@@ -20,14 +20,14 @@ class Project(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     status = db.Column(
         db.Enum(ProjectStatus), 
         default= ProjectStatus.active,
         nullable=False
     )
 
-    def __init__(self,user_id,description):
+    def __init__(self,user_id,description,status):
         self.description = description
         self.user_id = user_id
         self.status = ProjectStatus.active
@@ -40,5 +40,5 @@ class Project(db.Model):
             'id': self.id, 
             'description': self.description,
             'user_id': self.user_id,
-            'status':self.status,
+            'status':self.status.value,
         }

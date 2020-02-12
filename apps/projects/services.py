@@ -1,57 +1,67 @@
+
 import os
-from .models import Book
+from .models import Project,ProjectStatus,User
 from app import db, app
 from flask import  request, jsonify
 
-
-@app.route("/getall")
-def get_all():
-    try:
-        books=Book.query.all()
-        return  jsonify([e.serialize() for e in books])
-    except Exception as e:
-	    return(str(e))
-
-@app.route("/add")
-def add_book():
+''' Agregar un usuario '''
+@app.route("/users/add")
+def add_user():
     name=request.args.get('name')
-    author=request.args.get('author')
-    published=request.args.get('published')
     try:
-        book=Book(
-            name=name,
-            author=author,
-            published=published
+        user= User(
+            name=name
         )
-        db.session.add(book)
+        db.session.add(user)
         db.session.commit()
-        return "Book added. book id={}".format(book.id)
+        return "User added. User id={}".format(user.id)
     except Exception as e:
 	    return(str(e))
 
-@app.route("/get/<id_>")
-def get_by_id(id_):
+''' Listar todos los proyectos de un usuario '''
+@app.route("/projects/getall/<int:user_id>")
+def get_all_by_user(user_id):
+    projects = Project.query.filter_by(user_id=user_id)
+    if projects.count() >0:
+        return  jsonify([project.serialize() for project in projects])
+    else: 
+        return(str(Exception))
+
+''' Agregar un proyecto '''
+@app.route("/projects/add")
+def add_project():
+    description=request.args.get('description')
+    user_id=request.args.get('user_id')
     try:
-        book=Book.query.filter_by(id=id_).first()
-        return jsonify(book.serialize())
+        project= Project(
+            description=description,
+            user_id=user_id,
+            status= ProjectStatus.active
+        )
+        db.session.add(project)
+        db.session.commit()
+        return "Project added. Project id={}".format(project.id)
     except Exception as e:
 	    return(str(e))
 
-@app.route("/add/form",methods=['GET', 'POST'])
-def add_book_form():
-    if request.method == 'POST':
-        name=request.form.get('name')
-        author=request.form.get('author')
-        published=request.form.get('published')
-        try:
-            book=Book(
-                name=name,
-                author=author,
-                published=published
-            )
-            db.session.add(book)
-            db.session.commit()
-            return "Book added. book id={}".format(book.id)
-        except Exception as e:
-            return(str(e))
-    return render_template("getdata.html")
+''' Pausar un proyecto '''
+@app.route("/projects/pause/<int:id_>")
+def pause_project(id_):
+    try:
+        project= Project.query.filter_by(id=id_).first()
+        project.status=ProjectStatus.paused
+        db.session.commit()
+        return "Project status modified to paused. Project id={}".format(project.id)
+    except Exception as e:
+	    return(str(e))
+
+''' Activar nuevamente un proyecto '''
+@app.route("/projects/reactivate/<int:id_>")
+def reactivate_project(id_):
+    try:
+        project= Project.query.filter_by(id=id_).first()
+        project.status=ProjectStatus.active
+        db.session.commit()
+        return "Project status modified to active. Project id={}".format(project.id)
+    except Exception as e:
+	    return(str(e))

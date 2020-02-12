@@ -48,7 +48,7 @@ def add_project():
 @app.route("/projects/pause/<int:id_>")
 def pause_project(id_):
     try:
-        project= Project.query.filter_by(id=id_).first()
+        project= Project.query.get_or_404(id_)
         project.status=ProjectStatus.paused
         db.session.commit()
         return "Project status modified to paused. Project id={}".format(project.id)
@@ -59,9 +59,48 @@ def pause_project(id_):
 @app.route("/projects/reactivate/<int:id_>")
 def reactivate_project(id_):
     try:
-        project= Project.query.filter_by(id=id_).first()
+        project= Project.query.get_or_404(id_)
         project.status=ProjectStatus.active
         db.session.commit()
         return "Project status modified to active. Project id={}".format(project.id)
     except Exception as e:
 	    return(str(e))
+
+
+''' Eliminar un proyecto '''
+
+@app.route("/projects/delete/<int:id_>")
+def delete_project(id_):
+    project = Project.query.get_or_404(id_)
+    try:
+        db.session.delete(project)
+        db.session.commit()
+        return "Project Deleted. Project id={}".format(project.id)
+    except Exception as e:
+        return(str(e))
+
+''' Modificar un proyecto '''
+@app.route("/projects/update/<int:id_>")
+def update_project(id_):
+    project = Project.query.get_or_404(id_)
+    description=request.args.get('description')
+    user_id=request.args.get('user_id')
+    status = request.args.get('status')
+
+    project.description=description
+    project.user_id=user_id
+    if status == "pause":        
+        project.status= ProjectStatus.paused
+    else:
+        project.status = ProjectStatus.active
+    try:
+        db.session.commit()
+        return "Project Updated. Project id={}".format(project.id)
+    except Exception as e:
+        return(str(e))
+
+
+
+
+
+

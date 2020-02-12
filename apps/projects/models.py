@@ -29,11 +29,10 @@ class Project(db.Model):
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
 
-    def __init__(self,user_id,description,date,status):
+    def __init__(self,user_id,description,status):
         self.description = description
         self.user_id = user_id
         self.status = ProjectStatus.active
-        seld.date_created = date
 
     def __repr__(self):
         return '<id {}>'.format(self.id)

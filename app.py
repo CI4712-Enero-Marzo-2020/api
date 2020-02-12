@@ -12,7 +12,7 @@ db = SQLAlchemy(app)
 
 # A partir de aca se importan los servicios de las aplicaciones
 from apps.example_app.services import *
-
+from apps.projects.services import *
 
 
 ########################################

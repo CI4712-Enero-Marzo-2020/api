@@ -83,8 +83,8 @@ def delete_project(id_):
 def update_project(id_):
     if request.method == 'PUT':
         project = Project.query.get_or_404(id_)
-        description=request.args.get('description')
-        user_id=request.args.get('user_id')
+        description=request.form.get('description')
+        user_id=request.form.get('user_id')
 
         project.description=description
         project.user_id=user_id

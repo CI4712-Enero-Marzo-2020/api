@@ -45,5 +45,9 @@ class Project(db.Model):
             'description': self.description,
             'user_id': self.user_id,
             'status':self.status.value,
+<<<<<<< HEAD
             'date_created':self.date_created
+=======
+            'date_created':self.date_created,
+>>>>>>> c1468c2819c702a50e9fe87b9828e690c1a2d5e8
         }

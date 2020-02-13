@@ -85,14 +85,9 @@ def update_project(id_):
     project = Project.query.get_or_404(id_)
     description=request.args.get('description')
     user_id=request.args.get('user_id')
-    status = request.args.get('status')
 
     project.description=description
     project.user_id=user_id
-    if status == "pause":        
-        project.status= ProjectStatus.paused
-    else:
-        project.status = ProjectStatus.active
     try:
         db.session.commit()
         return "Project Updated. Project id={}".format(project.id)

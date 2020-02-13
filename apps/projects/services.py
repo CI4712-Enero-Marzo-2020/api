@@ -28,21 +28,22 @@ def get_all_by_user(user_id):
         return(str(Exception))
 
 ''' Agregar un proyecto '''
-@app.route("/projects/add")
+@app.route("/projects/add",methods=['POST'])
 def add_project():
-    description=request.args.get('description')
-    user_id=request.args.get('user_id')
-    try:
-        project= Project(
-            description=description,
-            user_id=user_id,
-            status= ProjectStatus.active
-        )
-        db.session.add(project)
-        db.session.commit()
-        return "Project added. Project id={}".format(project.id)
-    except Exception as e:
-	    return(str(e))
+    if request.method == 'POST':
+        description=request.form.get('description')
+        user_id=request.form.get('user_id')
+        try:
+            project= Project(
+                description=description,
+                user_id=user_id,
+                status= ProjectStatus.active
+            )
+            db.session.add(project)
+            db.session.commit()
+            return jsonify(project.serialize())
+        except Exception as e:
+            return(str(e))
 
 ''' Pausar un proyecto '''
 @app.route("/projects/pause/<int:id_>")
@@ -66,9 +67,7 @@ def reactivate_project(id_):
     except Exception as e:
 	    return(str(e))
 
-
 ''' Eliminar un proyecto '''
-
 @app.route("/projects/delete/<int:id_>")
 def delete_project(id_):
     project = Project.query.get_or_404(id_)
@@ -90,7 +89,7 @@ def update_project(id_):
     project.user_id=user_id
     try:
         db.session.commit()
-        return "Project Updated. Project id={}".format(project.id)
+        return jsonify(project.serialize())
     except Exception as e:
         return(str(e))
 

@@ -45,5 +45,5 @@ class Project(db.Model):
             'description': self.description,
             'user_id': self.user_id,
             'status':self.status.value,
-            'created_date':self.created_date,
+            'date_created':self.date_created,
         }

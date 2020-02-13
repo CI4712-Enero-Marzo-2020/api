@@ -79,19 +79,20 @@ def delete_project(id_):
         return(str(e))
 
 ''' Modificar un proyecto '''
-@app.route("/projects/update/<int:id_>")
+@app.route("/projects/update/<int:id_>",methods= ['PUT'])
 def update_project(id_):
-    project = Project.query.get_or_404(id_)
-    description=request.args.get('description')
-    user_id=request.args.get('user_id')
+    if request.method == 'PUT':
+        project = Project.query.get_or_404(id_)
+        description=request.args.get('description')
+        user_id=request.args.get('user_id')
 
-    project.description=description
-    project.user_id=user_id
-    try:
-        db.session.commit()
-        return jsonify(project.serialize())
-    except Exception as e:
-        return(str(e))
+        project.description=description
+        project.user_id=user_id
+        try:
+            db.session.commit()
+            return jsonify(project.serialize())
+        except Exception as e:
+            return(str(e))
 
 
 

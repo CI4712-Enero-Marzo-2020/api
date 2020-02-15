@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from settings.environment import APP_SETTINGS
 from flask import g
 
+
 # Inicializacion de Flask y SQLite
 app = Flask(__name__)
 app.config.from_object(APP_SETTINGS)
@@ -13,6 +14,7 @@ db = SQLAlchemy(app)
 # A partir de aca se importan los servicios de las aplicaciones
 from apps.example_app.services import *
 from apps.projects.services import *
+from apps.user.services import *
 
 
 ########################################

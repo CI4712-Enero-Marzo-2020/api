@@ -26,7 +26,7 @@ def get_all_logs():
 	    return(str(e))
 
 
-def add_event_logger(user, event):
+def add_event_logger(user, event, module):
     """
     Funcion que sera llamada en cada uno de los eventos
     para registrar en el logger.
@@ -34,7 +34,8 @@ def add_event_logger(user, event):
     try:
         log=Logger(
             user=user,
-            event=event
+            event=event,
+            loged_module=module
         )
         db.session.add(log)
         db.session.commit()

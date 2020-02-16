@@ -26,11 +26,13 @@ class Logger(db.Model):
         nullable=False
     )
     date = db.Column(db.DateTime, default=datetime.utcnow)
+    loged_module = db.Column(db.String(100), nullable=False)
 
 
-    def __init__(self, user, event):
+    def __init__(self, user, event, loged_module):
         self.user = user
         self.event = event
+        self.loged_module = loged_module
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -38,7 +40,8 @@ class Logger(db.Model):
     def serialize(self):
         return {
             'id': self.id, 
-            'user': self.user,
-            'event': self.event,
-            'date':self.date_created,
+            'user': UserA.query.get_or_404(self.user).username,
+            'event': self.event.value,
+            'date':self.date,
+            'loged_module':self.loged_module
         }

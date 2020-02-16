@@ -12,6 +12,7 @@ from flask_jwt_extended import (
 import datetime
 
 jwt = JWTManager(app)
+MODULE = 'Usuario'
 
 # Provide json body with username, first_name, last_name, role and password
 @app.route('/user/register')
@@ -39,9 +40,9 @@ def register():
             db.session.add(user)
             db.session.commit()
 
-            ############Agregando evento al logger###############
-            add_event_logger(user.id, LoggerEvents.user_register)
-            #####################################################
+            ############Agregando evento al logger#########################
+            add_event_logger(user.id, LoggerEvents.user_register, MODULE)
+            ###############################################################
 
             return jsonify(user.serialize()), 200
         except Exception as e:
@@ -70,9 +71,9 @@ def register():
             db.session.add(user)
             db.session.commit()
 
-            ############Agregando evento al logger###############
-            add_event_logger(user.id, LoggerEvents.user_register)
-            #####################################################
+            ############Agregando evento al logger#########################
+            add_event_logger(user.id, LoggerEvents.user_register, MODULE)
+            ###############################################################
 
             return jsonify(user.serialize()), 200
         except Exception as e:
@@ -85,6 +86,7 @@ def getall():
         return  jsonify([user.serialize() for user in users])
     except Exception as e:
 	    return(str(e))
+        
 
 # Provide json body with username and password parameters 
 @app.route('/user/login', methods=['POST'])
@@ -113,9 +115,12 @@ def login():
         'refresh_token': create_refresh_token(identity=username)
     }
 
-    #Agregando evento al logger
-    add_event_logger(user.id, LoggerEvents.user_login)   
+    ############Agregando evento al logger####################
+    add_event_logger(user.id, LoggerEvents.user_login, MODULE)
+    ##########################################################
+
     return jsonify(tokens), 200
+
 
 # Dont look at it
 @app.route('/user/refresh', methods=['POST'])
@@ -126,6 +131,7 @@ def refresh():
         'access_token': create_access_token(identity=current_user)
     }
     return jsonify(ret), 200
+
 
 # Provide Header with access token and json body with username and new_role parameters
 # -H "Authorization" : "Bearer <access_token provided in the login response>"
@@ -149,10 +155,12 @@ def edit():
     target.role = new_role
     db.session.commit()
 
-    #Agregando evento al logger
-    add_event_logger(user.id, LoggerEvents.user_role_assign)
+    #############Agregando evento al logger###########################
+    add_event_logger(user.id, LoggerEvents.user_role_assign, MODULE)
+    ##################################################################
 
     return jsonify({"msg": username+" role changed to "+new_role}), 200
+
 
 # Provide Header with access token
 # -H "Authorization" : "Bearer <access_token provided in the login response>"

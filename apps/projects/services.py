@@ -66,6 +66,7 @@ def reactivate_project(id_):
         return jsonify(project.serialize())
     except Exception as e:
 	     return jsonify({'server': 'ERROR'})
+         
 ''' Eliminar un proyecto '''
 @app.route("/projects/delete/<int:id_>")
 def delete_project(id_):
@@ -93,7 +94,14 @@ def update_project(id_):
         except Exception as e:
              return jsonify({'server': 'ERROR'})
 
-
+'''Buscar un proyecto por su id'''
+@app.route("/projects/<int:id_>")
+def search_project(id_):
+    try:
+        project= Project.query.get_or_404(id_)
+        return  jsonify([project.serialize()])
+    except Exception as e:
+	     return jsonify({'server': 'ERROR'})
 
 
 

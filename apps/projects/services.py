@@ -52,7 +52,7 @@ def pause_project(id_):
         project= Project.query.get_or_404(id_)
         project.status=ProjectStatus.paused
         db.session.commit()
-        return jsonify({'server': '200'})
+        return jsonify(project.serialize())
     except Exception as e:
 	     return jsonify({'server': 'ERROR'})
 
@@ -63,7 +63,7 @@ def reactivate_project(id_):
         project= Project.query.get_or_404(id_)
         project.status=ProjectStatus.active
         db.session.commit()
-        return jsonify({'server': '200'})
+        return jsonify(project.serialize())
     except Exception as e:
 	     return jsonify({'server': 'ERROR'})
 ''' Eliminar un proyecto '''

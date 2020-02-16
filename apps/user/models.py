@@ -10,6 +10,8 @@ class UserA(db.Model):
     last_name = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
+    projects = db.relationship('Project', backref='userA') 
+    logger = db.relationship('Logger', backref='userA') 
 
     def __init__(self,username,first_name,last_name,role,password):
         self.username = username

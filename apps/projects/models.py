@@ -1,14 +1,7 @@
 import os, enum
 from datetime import datetime
 from app import db
-from datetime import datetime
-
-class User(db.Model):
-    __tablename__ = 'users'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80))
-    projects = db.relationship('Project', backref='user') 
+from apps.user.models import UserA
 
 
 class ProjectStatus(enum.Enum):
@@ -22,7 +15,7 @@ class Project(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('userA.id'))
     status = db.Column(
         db.Enum(ProjectStatus), 
         default= ProjectStatus.active,

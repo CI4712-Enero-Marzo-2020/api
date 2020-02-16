@@ -1,6 +1,8 @@
 import os
 from app import db, app
 from .models import UserA
+from apps.logger.models import Logger, LoggerEvents
+from apps.logger.services import add_event_logger
 from flask import  request, jsonify, json
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -12,36 +14,69 @@ import datetime
 jwt = JWTManager(app)
 
 # Provide json body with username, first_name, last_name, role and password
-@app.route('/user/register', methods=['POST'])
+@app.route('/user/register')
 def register():
-    if not request.is_json:
-        return jsonify({"msg": "Missing JSON in request"}), 400
-    
-    roles = ['Product Owner', 'Scrum Master', 'Scrum Team']
-    parameters = {'username':None,'first_name':None,'last_name':None,'role':None,'password':None}
-    parameters = {param:request.json.get(param, None) for param in parameters.keys()}
-    
-    for param, value in parameters.items():
-        if not value:
-            return jsonify({"msg": "Missing "+param+" parameter"}), 400
-    
-    if UserA.query.filter_by(username=parameters['username']).first():
-        return jsonify({"msg": "Username '"+parameters['username']+"' already exist"}), 400
-    
-    if not parameters['role'] in roles:
-        return jsonify({"msg": "Role '"+parameters['role']+"' invalid"}), 400
+    request_link = False
 
-    try:
-        user = UserA(username=parameters['username'],
-                    first_name=parameters['first_name'],
-                    last_name=parameters['last_name'],
-                    role=parameters['role'],
-                    password=parameters['password'])
-        db.session.add(user)
-        db.session.commit()
-        return jsonify(user.serialize()), 200
-    except Exception as e:
-	    return(str(e))
+    if not request.is_json:
+        try:
+            username=request.args.get('username')
+            first_name=request.args.get('first_name')
+            last_name=request.args.get('last_name')
+            role=request.args.get('role')
+            password=request.args.get('password')
+            request_link = True
+        except Exception as e:
+            return jsonify({"msg": "Missing JSON in request"}), 400
+    
+    if request_link:
+        try:
+            user = UserA(username=username,
+                        first_name=first_name,
+                        last_name=last_name,
+                        role=role,
+                        password=password)
+            db.session.add(user)
+            db.session.commit()
+
+            ############Agregando evento al logger###############
+            add_event_logger(user.id, LoggerEvents.user_register)
+            #####################################################
+
+            return jsonify(user.serialize()), 200
+        except Exception as e:
+            return(str(e))
+    else:
+
+        roles = ['Product Owner', 'Scrum Master', 'Scrum Team']
+        parameters = {'username':None,'first_name':None,'last_name':None,'role':None,'password':None}
+        parameters = {param:request.json.get(param, None) for param in parameters.keys()}
+        
+        for param, value in parameters.items():
+            if not value:
+                return jsonify({"msg": "Missing "+param+" parameter"}), 400
+        
+        if UserA.query.filter_by(username=parameters['username']).first():
+            return jsonify({"msg": "Username '"+parameters['username']+"' already exist"}), 400
+        
+        if not parameters['role'] in roles:
+            return jsonify({"msg": "Role '"+parameters['role']+"' invalid"}), 400
+        try:
+            user = UserA(username=parameters['username'],
+                        first_name=parameters['first_name'],
+                        last_name=parameters['last_name'],
+                        role=parameters['role'],
+                        password=parameters['password'])
+            db.session.add(user)
+            db.session.commit()
+
+            ############Agregando evento al logger###############
+            add_event_logger(user.id, LoggerEvents.user_register)
+            #####################################################
+
+            return jsonify(user.serialize()), 200
+        except Exception as e:
+            return(str(e))
 
 @app.route('/user/getall')
 def getall():
@@ -54,7 +89,7 @@ def getall():
 # Provide json body with username and password parameters 
 @app.route('/user/login', methods=['POST'])
 def login():
-    print('hola')
+
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
 
@@ -77,6 +112,9 @@ def login():
         'access_token': create_access_token(identity=username, expires_delta=expires),
         'refresh_token': create_refresh_token(identity=username)
     }
+
+    #Agregando evento al logger
+    add_event_logger(user.id, LoggerEvents.user_login)   
     return jsonify(tokens), 200
 
 # Dont look at it
@@ -110,6 +148,10 @@ def edit():
     target = UserA.query.filter_by(username=username).first()
     target.role = new_role
     db.session.commit()
+
+    #Agregando evento al logger
+    add_event_logger(user.id, LoggerEvents.user_role_assign)
+
     return jsonify({"msg": username+" role changed to "+new_role}), 200
 
 # Provide Header with access token

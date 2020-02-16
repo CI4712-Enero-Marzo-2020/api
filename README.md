@@ -141,6 +141,15 @@ http://127.0.0.1:5000/getall
 ```
 
 
+# Ejemplos de servicios de user
+
+_para registrar a un usuario a base de datos._
+```
+http://127.0.0.1:5000/user/register?username=Jhon_Does89&first_name=Jhon&last_name=Does&role=Scrum Team&password=1234
+```
+
+
+
 ## Despliegue 📦
 
 _Por definir_

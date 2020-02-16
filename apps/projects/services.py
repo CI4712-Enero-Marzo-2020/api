@@ -1,22 +1,11 @@
 
 import os
-from .models import Project,ProjectStatus,User
+from .models import Project,ProjectStatus 
+from apps.logger.models import Logger, LoggerEvents
+from apps.logger.services import add_event_logger
 from app import db, app
 from flask import  request, jsonify
 
-''' Agregar un usuario '''
-@app.route("/users/add")
-def add_user():
-    name=request.args.get('name')
-    try:
-        user= User(
-            name=name
-        )
-        db.session.add(user)
-        db.session.commit()
-        return "User added. User id={}".format(user.id)
-    except Exception as e:
-	    return(str(e))
 
 ''' Listar todos los proyectos de un usuario '''
 @app.route("/projects/getall/<int:user_id>")
@@ -41,6 +30,10 @@ def add_project():
             )
             db.session.add(project)
             db.session.commit()
+
+            #Agregando evento al logger
+            add_event_logger(user_id, LoggerEvents.add_project)
+
             return jsonify(project.serialize())
         except Exception as e:
             return(str(e))
@@ -52,6 +45,11 @@ def pause_project(id_):
         project= Project.query.get_or_404(id_)
         project.status=ProjectStatus.paused
         db.session.commit()
+
+        #Agregando evento al logger
+        #user_id=request.form.get('user_id')
+        #add_event_logger(user_id, LoggerEvents.pause_project)
+
         return "Project status modified to paused. Project id={}".format(project.id)
     except Exception as e:
 	    return(str(e))
@@ -63,6 +61,11 @@ def reactivate_project(id_):
         project= Project.query.get_or_404(id_)
         project.status=ProjectStatus.active
         db.session.commit()
+
+        #Agregando evento al logger
+        #user_id=request.form.get('user_id')
+        #add_event_logger(user_id, LoggerEvents.activate_project)
+
         return "Project status modified to active. Project id={}".format(project.id)
     except Exception as e:
 	    return(str(e))
@@ -74,6 +77,11 @@ def delete_project(id_):
     try:
         db.session.delete(project)
         db.session.commit()
+
+        #Agregando evento al logger
+        #user_id=request.form.get('user_id')
+        #add_event_logger(user_id, LoggerEvents.delete_project)
+
         return "Project Deleted. Project id={}".format(project.id)
     except Exception as e:
         return(str(e))
@@ -90,6 +98,10 @@ def update_project(id_):
         project.user_id=user_id
         try:
             db.session.commit()
+
+            #Agregando evento al logger
+            #add_event_logger(user_id, LoggerEvents.update_project)
+
             return jsonify(project.serialize())
         except Exception as e:
             return(str(e))

@@ -16,7 +16,7 @@ def add_user():
         db.session.commit()
         return "User added. User id={}".format(user.id)
     except Exception as e:
-	    return(str(e))
+	     return jsonify({'server': 'ERROR'})
 
 ''' Listar todos los proyectos de un usuario '''
 @app.route("/projects/getall/<int:user_id>")
@@ -25,7 +25,7 @@ def get_all_by_user(user_id):
     if projects.count() >0:
         return  jsonify([project.serialize() for project in projects])
     else: 
-        return(str(Exception))
+         return jsonify({'server': 'ERROR'})
 
 ''' Agregar un proyecto '''
 @app.route("/projects/add",methods=['POST'])
@@ -43,7 +43,7 @@ def add_project():
             db.session.commit()
             return jsonify(project.serialize())
         except Exception as e:
-            return(str(e))
+             return jsonify({'server': 'ERROR'})
 
 ''' Pausar un proyecto '''
 @app.route("/projects/pause/<int:id_>")
@@ -52,9 +52,9 @@ def pause_project(id_):
         project= Project.query.get_or_404(id_)
         project.status=ProjectStatus.paused
         db.session.commit()
-        return "Project status modified to paused. Project id={}".format(project.id)
+        return jsonify({'server': '200'})
     except Exception as e:
-	    return(str(e))
+	     return jsonify({'server': 'ERROR'})
 
 ''' Activar nuevamente un proyecto '''
 @app.route("/projects/reactivate/<int:id_>")
@@ -63,10 +63,9 @@ def reactivate_project(id_):
         project= Project.query.get_or_404(id_)
         project.status=ProjectStatus.active
         db.session.commit()
-        return "Project status modified to active. Project id={}".format(project.id)
+        return jsonify({'server': '200'})
     except Exception as e:
-	    return(str(e))
-
+	     return jsonify({'server': 'ERROR'})
 ''' Eliminar un proyecto '''
 @app.route("/projects/delete/<int:id_>")
 def delete_project(id_):
@@ -74,9 +73,9 @@ def delete_project(id_):
     try:
         db.session.delete(project)
         db.session.commit()
-        return "Project Deleted. Project id={}".format(project.id)
+        return jsonify({'server': '200'})
     except Exception as e:
-        return(str(e))
+         return jsonify({'server': 'ERROR'})
 
 ''' Modificar un proyecto '''
 @app.route("/projects/update/<int:id_>",methods= ['PUT'])
@@ -92,7 +91,7 @@ def update_project(id_):
             db.session.commit()
             return jsonify(project.serialize())
         except Exception as e:
-            return(str(e))
+             return jsonify({'server': 'ERROR'})
 
 
 

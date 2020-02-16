@@ -26,6 +26,16 @@ def get_all_logs():
 	    return(str(e))
 
 
+@app.route("/logger/delete/<id_>")
+def delete_log(id_):
+    try:
+        log=Logger.query.filter_by(id=id_).delete()
+        db.session.commit()
+        return "Log deleted. log id= {}".format(id_)
+    except Exception as e:
+	    return(str(e))
+
+
 def add_event_logger(user, event, module):
     """
     Funcion que sera llamada en cada uno de los eventos

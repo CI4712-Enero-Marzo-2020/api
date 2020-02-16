@@ -31,7 +31,7 @@ def delete_log(id_):
     try:
         log=Logger.query.filter_by(id=id_).delete()
         db.session.commit()
-        return "Log deleted. log id= {}".format(id_)
+        return jsonify(log), 200
     except Exception as e:
 	    return(str(e))
 

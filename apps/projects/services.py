@@ -16,7 +16,7 @@ def get_all_by_user(user_id):
     if projects.count() >0:
         return  jsonify([project.serialize() for project in projects])
     else: 
-        return(str(Exception))
+         return jsonify({'server': 'ERROR'})
 
 ''' Agregar un proyecto '''
 @app.route("/projects/add",methods=['POST'])
@@ -38,8 +38,8 @@ def add_project():
             ############################################################
 
             return jsonify(project.serialize())
-        except Exception as e:
-            return(str(e))
+        except:
+             return jsonify({'server': 'ERROR'})
 
 ''' Pausar un proyecto '''
 @app.route("/projects/pause/<int:id_>")
@@ -49,14 +49,14 @@ def pause_project(id_):
         project.status=ProjectStatus.paused
         db.session.commit()
 
-        #user_id=request.form.get('user_id')
+        user_id=project.user_id
         ###########Agregando evento al logger##########################
-        #add_event_logger(user_id, LoggerEvents.pause_project, MODULE)
+        add_event_logger(user_id, LoggerEvents.pause_project, MODULE)
         ###############################################################
 
-        return "Project status modified to paused. Project id={}".format(project.id)
-    except Exception as e:
-	    return(str(e))
+        return jsonify(project.serialize())
+    except:
+	     return jsonify({'server': 'ERROR'})
 
 ''' Activar nuevamente un proyecto '''
 @app.route("/projects/reactivate/<int:id_>")
@@ -66,31 +66,31 @@ def reactivate_project(id_):
         project.status=ProjectStatus.active
         db.session.commit()
 
-        #user_id=request.form.get('user_id')
+        user_id=project.user_id
         ###########Agregando evento al logger#############################
-        #add_event_logger(user_id, LoggerEvents.activate_project, MODULE)
+        add_event_logger(user_id, LoggerEvents.activate_project, MODULE)
         ##################################################################
 
-        return "Project status modified to active. Project id={}".format(project.id)
-    except Exception as e:
-	    return(str(e))
-
+        return jsonify(project.serialize())
+    except:
+	     return jsonify({'server': 'ERROR'})
+         
 ''' Eliminar un proyecto '''
 @app.route("/projects/delete/<int:id_>")
 def delete_project(id_):
     project = Project.query.get_or_404(id_)
     try:
+        user_id=project.user_id
         db.session.delete(project)
         db.session.commit()
 
-        #user_id=request.form.get('user_id')
         ###########Agregando evento al logger###########################
-        #add_event_logger(user_id, LoggerEvents.delete_project, MODULE)
+        add_event_logger(user_id, LoggerEvents.delete_project, MODULE)
         ################################################################
 
-        return "Project Deleted. Project id={}".format(project.id)
-    except Exception as e:
-        return(str(e))
+        return jsonify({'server': '200'})
+    except:
+         return jsonify({'server': 'ERROR'})
 
 ''' Modificar un proyecto '''
 @app.route("/projects/update/<int:id_>",methods= ['PUT'])
@@ -110,11 +110,20 @@ def update_project(id_):
             ###############################################################
 
             return jsonify(project.serialize())
-        except Exception as e:
-            return(str(e))
+        except:
+             return jsonify({'server': 'ERROR'})
 
+'''Buscar un proyecto por su id'''
+@app.route("/projects/search/<int:id_>")
+def search_project(id_):
+    try:
+        project= Project.query.get_or_404(id_)
 
+        user_id=project.user_id
+        ###########Agregando evento al logger###########################
+        add_event_logger(user_id, LoggerEvents.search_project, MODULE)
+        ################################################################
 
-
-
-
+        return  jsonify([project.serialize()])
+    except:
+	     return jsonify({'server': 'ERROR'})

@@ -15,7 +15,7 @@ jwt = JWTManager(app)
 MODULE = 'Usuario'
 
 # Provide json body with username, first_name, last_name, role and password
-@app.route('/user/register')
+@app.route('/user/register',methods=['POST'])
 def register():
     request_link = False
 

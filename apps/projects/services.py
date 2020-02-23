@@ -42,55 +42,58 @@ def add_project():
              return jsonify({'server': 'ERROR'})
 
 ''' Pausar un proyecto '''
-@app.route("/projects/pause/<int:id_>")
+@app.route("/projects/pause/<int:id_>",methods= ['PATCH'])
 def pause_project(id_):
-    try:
-        project= Project.query.get_or_404(id_)
-        project.status=ProjectStatus.paused
-        db.session.commit()
+    if request.method == 'PATCH':
+        try:
+            project= Project.query.get_or_404(id_)
+            project.status=ProjectStatus.paused
+            db.session.commit()
 
-        user_id=project.user_id
-        ###########Agregando evento al logger##########################
-        add_event_logger(user_id, LoggerEvents.pause_project, MODULE)
-        ###############################################################
+            user_id=project.user_id
+            ###########Agregando evento al logger##########################
+            add_event_logger(user_id, LoggerEvents.pause_project, MODULE)
+            ###############################################################
 
-        return jsonify(project.serialize())
-    except:
-	     return jsonify({'server': 'ERROR'})
+            return jsonify(project.serialize())
+        except:
+            return jsonify({'server': 'ERROR'})
 
 ''' Activar nuevamente un proyecto '''
-@app.route("/projects/reactivate/<int:id_>")
+@app.route("/projects/reactivate/<int:id_>", methods= ['PATCH'])
 def reactivate_project(id_):
-    try:
-        project= Project.query.get_or_404(id_)
-        project.status=ProjectStatus.active
-        db.session.commit()
+    if request.method == 'PATCH':
+        try:
+            project= Project.query.get_or_404(id_)
+            project.status=ProjectStatus.active
+            db.session.commit()
 
-        user_id=project.user_id
-        ###########Agregando evento al logger#############################
-        add_event_logger(user_id, LoggerEvents.activate_project, MODULE)
-        ##################################################################
+            user_id=project.user_id
+            ###########Agregando evento al logger#############################
+            add_event_logger(user_id, LoggerEvents.activate_project, MODULE)
+            ##################################################################
 
-        return jsonify(project.serialize())
-    except:
-	     return jsonify({'server': 'ERROR'})
+            return jsonify(project.serialize())
+        except:
+            return jsonify({'server': 'ERROR'})
          
 ''' Eliminar un proyecto '''
-@app.route("/projects/delete/<int:id_>")
+@app.route("/projects/delete/<int:id_>",methods= ['DELETE'])
 def delete_project(id_):
-    project = Project.query.get_or_404(id_)
-    try:
-        user_id=project.user_id
-        db.session.delete(project)
-        db.session.commit()
+    if request.method == 'DELETE':
+        project = Project.query.get_or_404(id_)
+        try:
+            user_id=project.user_id
+            db.session.delete(project)
+            db.session.commit()
 
-        ###########Agregando evento al logger###########################
-        add_event_logger(user_id, LoggerEvents.delete_project, MODULE)
-        ################################################################
+            ###########Agregando evento al logger###########################
+            add_event_logger(user_id, LoggerEvents.delete_project, MODULE)
+            ################################################################
 
-        return jsonify({'server': '200'})
-    except:
-         return jsonify({'server': 'ERROR'})
+            return jsonify({'server': '200'})
+        except:
+            return jsonify({'server': 'ERROR'})
 
 ''' Modificar un proyecto '''
 @app.route("/projects/update/<int:id_>",methods= ['PUT'])

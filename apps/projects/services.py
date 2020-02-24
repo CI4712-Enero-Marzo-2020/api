@@ -9,6 +9,7 @@ from flask import  request, jsonify
 
 MODULE = 'Proyecto'
 
+
 ''' Listar todos los proyectos de un usuario '''
 @app.route("/projects/getall/<int:user_id>")
 def get_all_by_user(user_id):
@@ -16,7 +17,8 @@ def get_all_by_user(user_id):
     if projects.count() >0:
         return  jsonify([project.serialize() for project in projects])
     else: 
-         return jsonify({'server': 'ERROR'})
+         return jsonify({'server': 'NO_CONTENT'})
+
 
 ''' Agregar un proyecto '''
 @app.route("/projects/add",methods=['POST'])
@@ -41,6 +43,7 @@ def add_project():
         except:
              return jsonify({'server': 'ERROR'})
 
+
 ''' Pausar un proyecto '''
 @app.route("/projects/pause/<int:id_>",methods= ['PATCH'])
 def pause_project(id_):
@@ -59,6 +62,7 @@ def pause_project(id_):
         except:
             return jsonify({'server': 'ERROR'})
 
+
 ''' Activar nuevamente un proyecto '''
 @app.route("/projects/reactivate/<int:id_>", methods= ['PATCH'])
 def reactivate_project(id_):
@@ -76,7 +80,8 @@ def reactivate_project(id_):
             return jsonify(project.serialize())
         except:
             return jsonify({'server': 'ERROR'})
-         
+
+
 ''' Eliminar un proyecto '''
 @app.route("/projects/delete/<int:id_>",methods= ['DELETE'])
 def delete_project(id_):
@@ -94,6 +99,7 @@ def delete_project(id_):
             return jsonify({'server': '200'})
         except:
             return jsonify({'server': 'ERROR'})
+
 
 ''' Modificar un proyecto '''
 @app.route("/projects/update/<int:id_>",methods= ['PUT'])
@@ -115,6 +121,7 @@ def update_project(id_):
             return jsonify(project.serialize())
         except:
              return jsonify({'server': 'ERROR'})
+
 
 '''Buscar un proyecto por su id'''
 @app.route("/projects/search/<int:id_>")

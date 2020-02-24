@@ -15,6 +15,7 @@ db = SQLAlchemy(app)
 from apps.example_app.services import *
 from apps.projects.services import *
 from apps.user.services import *
+from apps.stories.services import * 
 
 
 ########################################

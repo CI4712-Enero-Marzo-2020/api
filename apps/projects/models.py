@@ -22,6 +22,7 @@ class Project(db.Model):
         nullable=False
     )
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    stories = db.relationship('Story', backref='project')
 
 
     def __init__(self,user_id,description,status):

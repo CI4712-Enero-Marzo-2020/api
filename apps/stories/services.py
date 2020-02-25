@@ -1,5 +1,4 @@
-
-import os
+import os, sys
 from .models import *
 from apps.projects.models import Project,ProjectStatus 
 from apps.logger.models import Logger, LoggerEvents
@@ -36,3 +35,86 @@ def modify_class_story(id_):
         except:
             return jsonify({'server': 'ERROR'})
 
+''' Agregar historia '''
+@app.route("/stories/add",methods=['POST'])
+def add_story():
+    if request.method == 'POST':
+        description=request.form.get('description')
+        project_id=request.form.get('project_id')
+        priority=request.form.get('priority')
+        #epic=request.form.get('epic')
+        try:
+            story = Story(
+                project_id = project_id,
+                description=description,
+                priority = priority,
+                epic = False,
+            )
+            db.session.add(story)
+            db.session.commit()
+
+            ###########Agregando evento al logger#######################
+            # add_event_logger(user_id, LoggerEvents.add_project, MODULE)
+            ############################################################
+
+            return jsonify(story.serialize())
+        except Exception as e:
+            print(e)            
+            return jsonify({'server': 'ERROR'})
+
+''' Eliminar una historia '''
+@app.route("/stories/delete/<int:id_>",methods= ['DELETE'])
+def delete_story(id_):
+    if request.method == 'DELETE':
+        story = Story.query.get_or_404(id_)
+        try:
+            project_id=story.project_id
+            db.session.delete(story)
+            db.session.commit()
+
+            ###########Agregando evento al logger###########################
+            #add_event_logger(user_id, LoggerEvents.delete_project, MODULE)
+            ################################################################
+
+            return jsonify({'server': '200'})
+        except:
+            return jsonify({'server': 'ERROR'})
+
+
+'''Buscar un proyecto por su id'''
+@app.route("/stories/search/<int:id_>")
+def search_story(id_):
+    try:
+        story= Story.query.get_or_404(id_)
+
+        project_id=story.project_id
+        ###########Agregando evento al logger###########################
+        #add_event_logger(user_id, LoggerEvents.search_project, MODULE)
+        ################################################################
+
+        return  jsonify([story.serialize()])
+    except:
+         return jsonify({'server': 'ERROR'})
+
+
+''' Modificar una historia '''
+@app.route("/stories/update/<int:id_>",methods= ['PUT'])
+def update_story(id_):
+    if request.method == 'PUT':
+        story = Story.query.get_or_404(id_)
+        description=request.form.get('description')
+        project_id=request.form.get('project_id')
+
+        story.description=description
+        story.project_id=project_id
+        try:
+            db.session.commit()
+
+            ###########Agregando evento al logger##########################
+            #add_event_logger(user_id, LoggerEvents.update_project, MODULE)
+            ###############################################################
+
+            return jsonify(story.serialize())
+        except Exception as e:
+            print(e)
+            return jsonify({'server': 'ERROR'})

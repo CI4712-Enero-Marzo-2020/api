@@ -27,7 +27,7 @@ def test_add_project(client, init_database):
     app.db.session.commit()
 
 def test_get_all_by_user(client, init_database):
-    test_user_id = 4
+    test_user_id = 1
     rv = client.post('/projects/add', 
         data = dict(
             description = 'Test description1',
@@ -97,7 +97,6 @@ def test_delete_project(client, init_database):
     new_project_id = response_json['id']
     rv = client.delete("/projects/delete/" + str(new_project_id))
     deleted_project = Project.query.get(new_project_id)
-    print(deleted_project)
 
     assert deleted_project is None
     app.db.session.commit()

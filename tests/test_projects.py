@@ -2,21 +2,14 @@ import sys, os, tempfile, pytest, json
 
 import app
 import apps.projects.services as services
-from apps.projects.models import User, Project, ProjectStatus
+from apps.projects.models import Project, ProjectStatus
+from apps.user.models import UserA as User
 
 
 def test_projects_work():
     
     assert(True)
 
-def test_add_user(client, init_database):
-    rv = client.get('/users/add')
-    new_user = User.query.get(3)
-    
-    assert rv.data != None
-    assert new_user != None
-    assert new_user.id == int(new_user.id)
-    app.db.session.commit()
 
 def test_add_project(client, init_database):
     rv = client.post('/projects/add', 
@@ -67,7 +60,7 @@ def test_pause_project(client, init_database):
     )
     response_json = json.loads(rv.data.decode('utf-8'))
     new_project_id = response_json['id']
-    rv = client.get('/projects/pause/' + str(new_project_id))
+    rv = client.patch('/projects/pause/' + str(new_project_id))
     paused_project = Project.query.get(new_project_id)
     
     assert paused_project.status == ProjectStatus.paused
@@ -102,8 +95,9 @@ def test_delete_project(client, init_database):
     )
     response_json = json.loads(rv.data.decode('utf-8'))
     new_project_id = response_json['id']
-    rv = client.get("/projects/delete/" + str(new_project_id))
+    rv = client.delete("/projects/delete/" + str(new_project_id))
     deleted_project = Project.query.get(new_project_id)
+    print(deleted_project)
 
     assert deleted_project is None
     app.db.session.commit()
@@ -149,8 +143,8 @@ def client():
 def init_database():
     app.db.create_all()
 
-    user1 = User()
-    user2 = User()
+    user1 = User('bob1','bob','dylan','emprendedor','123')
+    user2 = User('bob2','bob','esponja','cocinero','123')
 
     app.db.session.add(user1)
     app.db.session.add(user2)

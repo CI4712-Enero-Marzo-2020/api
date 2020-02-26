@@ -62,6 +62,66 @@ def add_story():
             print(e)            
             return jsonify({'server': 'ERROR'})
 
+
+''' Prioridad Hight a la Historia '''
+@app.route("/stories/hight/<int:id_>",methods= ['PATCH'])
+def hight_story(id_):
+    if request.method == 'PATCH':
+        try:
+            story= Story.query.get_or_404(id_)
+            story.priority=StoryPriority.hight
+            db.session.commit()
+
+            user_id=story.user_id
+            ###########Agregando evento al logger##########################
+            add_event_logger(user_id, LoggerEvents.hight_story, MODULE)
+            ###############################################################
+
+            return jsonify(project.serialize())
+        except:
+            return jsonify({'server': 'ERROR'})
+
+''' Prioridad Medium a la Historia '''
+@app.route("/stories/medium/<int:id_>",methods= ['PATCH'])
+def medium_story(id_):
+    if request.method == 'PATCH':
+        try:
+            story= Story.query.get_or_404(id_)
+            story.priority=StoryPriority.medium
+            db.session.commit()
+
+            user_id=story.user_id
+            ###########Agregando evento al logger##########################
+            add_event_logger(user_id, LoggerEvents.medium_story, MODULE)
+            ###############################################################
+
+            return jsonify(project.serialize())
+        except:
+            return jsonify({'server': 'ERROR'})
+
+
+''' Prioridad Low a la Historia '''
+@app.route("/stories/low/<int:id_>",methods= ['PATCH'])
+def low_story(id_):
+    if request.method == 'PATCH':
+        try:
+            story= Story.query.get_or_404(id_)
+            story.priority=StoryPriority.low
+            db.session.commit()
+
+            user_id=story.user_id
+            ###########Agregando evento al logger##########################
+            add_event_logger(user_id, LoggerEvents.low_story, MODULE)
+            ###############################################################
+
+            return jsonify(project.serialize())
+        except:
+            return jsonify({'server': 'ERROR'})
+
+
+
+
+
 ''' Eliminar una historia '''
 @app.route("/stories/delete/<int:id_>",methods= ['DELETE'])
 def delete_story(id_):

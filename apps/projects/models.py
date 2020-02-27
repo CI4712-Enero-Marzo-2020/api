@@ -2,6 +2,7 @@ import os, enum
 from datetime import datetime
 from app import db
 from apps.user.models import UserA
+from apps.sprints.models import Sprint
 
 
 class ProjectStatus(enum.Enum):
@@ -23,6 +24,11 @@ class Project(db.Model):
     )
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     stories = db.relationship('Story', backref='project')
+    
+    ###### RELACIONES CON SPRINT    
+    #relacion one project - many sprints
+    sprints = db.relationship('Sprint', backref='projects', lazy=True)
+    
 
 
     def __init__(self,user_id,description,status):

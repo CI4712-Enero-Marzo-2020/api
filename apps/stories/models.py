@@ -4,7 +4,6 @@ from app import db
 from apps.user.models import UserA
 from apps.projects.models import *
 
-
 class StoryPriority(enum.Enum):
     high = 'high'
     medium = 'medium'
@@ -25,6 +24,16 @@ class Story(db.Model):
     epic = db.Column(db.Boolean)
     done = db.Column(db.Boolean)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    ###### RELACIONES CON SPRINT
+    # relacion one story - one sprint OPCIONAL
+    sprint_id = db.Column(db.Integer, db.ForeignKey('sprints.id'), nullable=True)
+    
+    # # relacion one story - many criterias
+    criteria = db.relationship('acceptcriteria', backref='stories', lazy=True, post_update=True)
+    # # relacion one story - many tests
+    tests = db.relationship('accepttests', backref='stories', lazy=True, post_update=True)
+
 
     def __init__(self,project_id,description,priority,epic):
         self.description = description

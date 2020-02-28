@@ -30,9 +30,9 @@ class Story(db.Model):
     sprint_id = db.Column(db.Integer, db.ForeignKey('sprints.id'), nullable=True)
     
     # # relacion one story - many criterias
-    criteria = db.relationship('acceptcriteria', backref='stories', lazy=True, post_update=True)
+    criteria = db.relationship('AcceptanceCriteria', backref='stories', lazy=True, post_update=True)
     # # relacion one story - many tests
-    tests = db.relationship('accepttests', backref='stories', lazy=True, post_update=True)
+    tests = db.relationship('AcceptanceTest', backref='stories', lazy=True, post_update=True)
 
 
     def __init__(self,project_id,description,priority,epic):

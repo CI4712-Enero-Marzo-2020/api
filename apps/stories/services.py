@@ -69,18 +69,18 @@ def add_story():
             return jsonify({'server': 'ERROR','response': e})
 
 
-''' Prioridad Hight a la Historia '''
-@app.route("/stories/hight/<int:id_>",methods= ['PATCH'])
-def hight_story(id_):
+''' Prioridad High a la Historia '''
+@app.route("/stories/high/<int:id_>",methods= ['PATCH'])
+def high_story(id_):
     if request.method == 'PATCH':
         try:
             story= Story.query.get_or_404(id_)
-            story.priority=StoryPriority.hight
+            story.priority=StoryPriority.high
             db.session.commit()
 
             user_id=story.user_id
             ###########Agregando evento al logger##########################
-            add_event_logger(user_id, LoggerEvents.hight_story, MODULE)
+            add_event_logger(user_id, LoggerEvents.high_story, MODULE)
             ###############################################################
 
             return jsonify(project.serialize())

@@ -120,8 +120,6 @@ def low_story(id_):
 
 
 
-
-
 ''' Eliminar una historia '''
 @app.route("/stories/delete/<int:id_>",methods= ['DELETE'])
 def delete_story(id_):
@@ -178,3 +176,81 @@ def update_story(id_):
         except Exception as e:
             print(e)
             return jsonify({'server': 'ERROR'})
+
+
+'''Agrega historia a una epica'''
+@app.route("/stories/add_to_epic/<int:story_id>/<int:epic_id>",methods= ['PUT'])
+def add_to_epic(story_id, epic_id):
+    if request.method == 'PUT':
+        try:
+            story= Story.query.get_or_404(story_id)
+            new_parent = Story.query.get_or_404(epic_id)
+
+            if new_parent.epic:
+                new_parent.children.append(story)
+                story.parent_id = new_parent.id
+            else:
+                return jsonify({'server': 'ERROR: Parent is not epic'})
+
+            ###########Agregando evento al logger###########################
+            #add_event_logger(user_id, LoggerEvents.search_project, MODULE)
+            ################################################################
+
+            return jsonify([new_parent.serialize()])
+        except Exception as e:
+            print(e)
+            return jsonify({'server': 'ERROR'})
+
+'''Elimina historia de su epica'''
+@app.route("/stories/remove_from_epic/<int:story_id>/",methods=['DELETE'])
+def remove_from_epic(story_id):
+    if request.method == 'DELETE':
+        try:
+            story = Story.query.get_or_404(story_id)
+            parent = Story.query.get_or_404(story.parent_id)
+            if parent.epic:
+               parent.children.remove(story_id)
+               story.parent_id = None
+            else:
+                return jsonify({'server': 'ERROR: Parent is not epic'})
+            
+            ###########Agregando evento al logger###########################
+            #add_event_logger(user_id, LoggerEvents.search_project, MODULE)
+            ################################################################
+
+            return  jsonify([parent.serialize()])
+        except Exception as e:
+            print(e)
+            return jsonify({'server': 'ERROR'})
+
+
+'''Retorna historias de una epica'''
+@app.route("/stories/get_children/<int:id_>")
+def get_children_from_epic(id_):
+    try:
+        parent= Story.query.get_or_404(id_)
+
+        ###########Agregando evento al logger###########################
+        #add_event_logger(user_id, LoggerEvents.search_project, MODULE)
+        ################################################################
+
+        return  jsonify([child.serialize() for child in parent.children])
+    except Exception as e:
+        print(e)
+        return jsonify({'server': 'ERROR'})
+
+'''Retorna historias de una epica'''
+@app.route("/stories/get_parent/<int:id_>")
+def get_parent_from_story(id_):
+    try:
+        story= Story.query.get_or_404(id_)
+
+        ###########Agregando evento al logger###########################
+        #add_event_logger(user_id, LoggerEvents.search_project, MODULE)
+        ################################################################
+        parent = Story.query.get_or_404(story.parent_id)
+
+        return  jsonify(parent.serialize())
+    except Exception as e:
+        print(e)
+        return jsonify({'server': 'ERROR'})

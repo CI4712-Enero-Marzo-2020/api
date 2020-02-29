@@ -26,6 +26,9 @@ class Story(db.Model):
     done = db.Column(db.Boolean)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
+    parent_id = db.Column(db.Integer, db.ForeignKey('stories.id'))
+    children = db.relationship('Story', lazy='joined')
+    
     def __init__(self,project_id,description,priority,epic):
         self.description = description
         self.project_id = project_id

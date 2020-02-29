@@ -93,6 +93,142 @@ def test_update_story(client, init_database):
     assert modified_story.project_id == 2
     app.db.session.commit()
 
+def test_add_to_epic(client, init_database):
+
+    rv = client.post('/stories/add', 
+        data = dict(
+            description = 'Test description1',
+            project_id = 1,
+            epic = False,
+            priority = 'high'
+        )
+    )
+    parent_story_id = json.loads(rv.data.decode('utf-8'))['id']
+    rv = client.patch("/stories/classification/" + str(parent_story_id))
+    parent_story = Story.query.get(parent_story_id)
+
+    rv = client.post('/stories/add', 
+        data = dict(
+            description = 'Test description1',
+            project_id = 1,
+            epic = False,
+            priority = 'high'
+        )
+    )
+    child_story_id = json.loads(rv.data.decode('utf-8'))['id']
+    child_story = Story.query.get(child_story_id)
+    
+    rv = client.put("/stories/add_to_epic/"+str(child_story_id)+"/"+str(parent_story_id))
+
+    updated_parent = Story.query.get(parent_story_id)
+    updated_child = Story.query.get(child_story_id)
+
+    assert child_story in updated_parent.children
+    assert updated_child.parent_id == parent_story_id
+
+    app.db.session.commit()
+
+def test_remove_from_epic(client, init_database):
+
+    rv = client.post('/stories/add', 
+        data = dict(
+            description = 'Test description1',
+            project_id = 1,
+            epic = False,
+            priority = 'high'
+        )
+    )
+    parent_story_id = json.loads(rv.data.decode('utf-8'))['id']
+    rv = client.patch("/stories/classification/" + str(parent_story_id))
+    parent_story = Story.query.get(parent_story_id)
+
+    rv = client.post('/stories/add', 
+        data = dict(
+            description = 'Test description1',
+            project_id = 1,
+            epic = False,
+            priority = 'high'
+        )
+    )
+    child_story_id = json.loads(rv.data.decode('utf-8'))['id']
+    child_story = Story.query.get(child_story_id)
+    
+    rv = client.put("/stories/remove_from_epic/"+str(child_story_id))
+
+    updated_parent = Story.query.get(parent_story_id)
+    updated_child = Story.query.get(child_story_id)
+
+    assert child_story not in updated_parent.children
+    assert updated_child.parent_id is None
+
+    app.db.session.commit()
+
+def test_get_children_from_epic(client, init_database):
+
+    rv = client.post('/stories/add', 
+        data = dict(
+            description = 'Test description1',
+            project_id = 1,
+            epic = False,
+            priority = 'high'
+        )
+    )
+    parent_story_id = json.loads(rv.data.decode('utf-8'))['id']
+    rv = client.patch("/stories/classification/" + str(parent_story_id))
+    parent_story = Story.query.get(parent_story_id)
+
+    rv = client.post('/stories/add', 
+        data = dict(
+            description = 'Test description1',
+            project_id = 1,
+            epic = False,
+            priority = 'high'
+        )
+    )
+    child_story_id = json.loads(rv.data.decode('utf-8'))['id']
+    child_story = Story.query.get(child_story_id)
+    rv = client.put("/stories/add_to_epic/"+str(child_story_id)+"/"+str(parent_story_id))
+    rv = client.get("/stories/get_children/"+str(parent_story_id))
+    
+    children = json.loads(rv.data.decode('utf-8'))
+
+    assert child_story_id in [elem['id'] for elem in children]
+
+    app.db.session.commit()
+
+def test_get_parent_from_child(client, init_database):
+
+    rv = client.post('/stories/add', 
+        data = dict(
+            description = 'Test description1',
+            project_id = 1,
+            epic = False,
+            priority = 'high'
+        )
+    )
+    parent_story_id = json.loads(rv.data.decode('utf-8'))['id']
+    rv = client.patch("/stories/classification/" + str(parent_story_id))
+    parent_story = Story.query.get(parent_story_id)
+
+    rv = client.post('/stories/add', 
+        data = dict(
+            description = 'Test description1',
+            project_id = 1,
+            epic = False,
+            priority = 'high'
+        )
+    )
+    child_story_id = json.loads(rv.data.decode('utf-8'))['id']
+    child_story = Story.query.get(child_story_id)
+    rv = client.put("/stories/add_to_epic/"+str(child_story_id)+"/"+str(parent_story_id))
+    
+    rv = client.get("/stories/get_parent/"+str(child_story_id))
+    
+    parent = json.loads(rv.data.decode('utf-8'))
+
+    assert parent_story_id == parent['id']
+
+    app.db.session.commit()
 
 @pytest.fixture
 def client():

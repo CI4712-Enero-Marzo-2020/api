@@ -41,7 +41,13 @@ def add_story():
     if request.method == 'POST':
         description=request.form.get('description')
         project_id=request.form.get('project_id')
-        priority=request.form.get('priority')
+        priority_number=request.form.get('priority')
+        if priority_number == 0:
+            priority = "high"
+        elif priority_number == 1:
+            priority = 'medium'
+        else:
+            priority = 'low'
         epic=request.form.get('epic')
         try:
             story = Story(
@@ -60,7 +66,7 @@ def add_story():
             return jsonify(story.serialize())
         except Exception as e:
             print(e)            
-            return jsonify({'server': 'ERROR'})
+            return jsonify({'server': 'ERROR','response': e})
 
 
 ''' Prioridad Hight a la Historia '''

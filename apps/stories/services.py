@@ -42,13 +42,13 @@ def add_story():
         description=request.form.get('description')
         project_id=request.form.get('project_id')
         priority=request.form.get('priority')
-        #epic=request.form.get('epic')
+        epic=request.form.get('epic')
         try:
             story = Story(
                 project_id = project_id,
                 description=description,
                 priority = priority,
-                epic = False,
+                epic = epic,
             )
             db.session.add(story)
             db.session.commit()

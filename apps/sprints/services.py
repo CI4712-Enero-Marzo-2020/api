@@ -23,6 +23,15 @@ def get_sprints_by_project(project_id):
     else: 
          return jsonify({'server': 'NO_CONTENT'})
 
+@app.route("/sprint/<sprint_id>")
+def get_stories_by_sprint(sprint_id):
+
+    stories = Story.query.filter_by(sprint_id=sprint_id)
+    if stories.count() >0:
+        return  jsonify([story.serialize() for story in stories])
+    else: 
+         return jsonify({'server': 'NO_CONTENT'})
+
 
 @app.route("/criteria/getbystory/<story_id>")
 def get_criteria_by_story(story_id):
@@ -59,10 +68,10 @@ def get_tests_by_story(story_id):
 @app.route("/sprint/add",methods=['POST'])
 def add_sprint():
     if request.method == 'POST':
-        description=request.form.get('description')
-        project_id=request.form.get('project_id')
-        user_id=request.form.get('user_id')
-
+        description=request.json.get('description')
+        project_id=request.json.get('project_id')
+        user_id=request.json.get('user_id')
+        
         try:
             sprint = Sprint(
                 project_id = project_id,
@@ -72,27 +81,28 @@ def add_sprint():
             )
             db.session.add(sprint)
             db.session.commit()
+            
 
             ###########Agregando evento al logger#######################
             add_event_logger(user_id, LoggerEvents.add_sprint, MODULE)
             ############################################################
-
-            return jsonify(sprint.serialize())
+            print(sprint)
+            return jsonify(sprint.serialize()), 200
         except Exception as e:
             print(e)            
-            return jsonify({'server': 'ERROR'})
+            return jsonify({'server': e})
 
 
 @app.route("/criteria/add",methods=['POST'])
 def add_criteria():
     if request.method == 'POST':
-        description=request.form.get('description')
-        story_id=request.form.get('story_id')
-        user_id=request.form.get('user_id')
+        description=request.json.get('description')
+        story_id=request.json.get('story_id')
+        user_id=request.json.get('user_id')
 
         user = UserA.query.get_or_404(user_id)
         if user.role != 'Scrum Team':
-            return jsonify({'server': 'ERROR'})
+            return jsonify({'server': 'Debe ser Scrum Team'})
 
         try:
             criteria = AcceptanceCriteria(
@@ -117,10 +127,10 @@ def add_criteria():
 @app.route("/tests/add",methods=['POST'])
 def add_tests():
     if request.method == 'POST':
-        description=request.form.get('description')
-        story_id=request.form.get('story_id')
-        user_id=request.form.get('user_id')
-
+        description=request.json.get('description')
+        story_id=request.json.get('story_id')
+        user_id=request.json.get('user_id')
+        
         user = UserA.query.get_or_404(user_id)
         if user.role != 'Product Owner':
             return jsonify({'server': 'ERROR'})

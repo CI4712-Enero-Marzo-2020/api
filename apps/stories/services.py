@@ -48,7 +48,11 @@ def add_story():
             priority = 'medium'
         else:
             priority = 'low'
-        epic=request.form.get('epic')
+        epic_string=request.form.get('epic')
+        if epic_string == "true":
+            epic == True
+        else:
+            epic == False
         try:
             story = Story(
                 project_id = project_id,

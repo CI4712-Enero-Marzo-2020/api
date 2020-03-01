@@ -210,18 +210,19 @@ def add_to_epic(story_id, epic_id):
                 story.parent_id = new_parent.id
             else:
                 return jsonify({'server': 'ERROR: Parent is not epic'})
-            try:
-                db.session.commit()
+            db.session.commit()
                 ###########Agregando evento al logger###########################
                 #add_event_logger(user_id, LoggerEvents.search_project, MODULE)
                 ################################################################
 
-                return jsonify([story.serialize()])
-            except Exception as e:
-                print(e)
-                return jsonify({'server': 'ERROR'})
+            return jsonify([story.serialize()])
+        except Exception as e:
+            print(e)
+            return jsonify({'server': 'ERROR'})
 
-'''Elimina historia de su epica'''
+
+
+
 @app.route("/stories/remove_from_epic/<int:story_id>/",methods=['DELETE'])
 def remove_from_epic(story_id):
     if request.method == 'DELETE':
@@ -233,7 +234,7 @@ def remove_from_epic(story_id):
                story.parent_id = None
             else:
                 return jsonify({'server': 'ERROR: Parent is not epic'})
-            
+            db.session.commit()
             ###########Agregando evento al logger###########################
             #add_event_logger(user_id, LoggerEvents.search_project, MODULE)
             ################################################################

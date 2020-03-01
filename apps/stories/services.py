@@ -41,13 +41,7 @@ def add_story():
     if request.method == 'POST':
         description=request.form.get('description')
         project_id=request.form.get('project_id')
-        priority_number=request.form.get('priority')
-        if priority_number == 0:
-            priority = "high"
-        elif priority_number == 1:
-            priority = 'medium'
-        else:
-            priority = 'low'
+        priority=request.form.get('priority')
         epic_string=request.form.get('epic')
         if epic_string == "true":
             epic = True
@@ -172,14 +166,7 @@ def update_story(id_):
         story = Story.query.get_or_404(id_)
         description=request.form.get('description')
         project_id=request.form.get('project_id')
-        priority_number=request.form.get('priority')
-        epic_string=request.form.get('epic')
-        if priority_number == 0:
-            priority = "high"
-        elif priority_number == 1:
-            priority = 'medium'
-        else:
-            priority = 'low'
+        priority=request.form.get('priority')
         epic_string=request.form.get('epic')
         if epic_string == "true":
             epic = True
@@ -223,15 +210,16 @@ def add_to_epic(story_id, epic_id):
                 story.parent_id = new_parent.id
             else:
                 return jsonify({'server': 'ERROR: Parent is not epic'})
+            try:
+                db.session.commit()
+                ###########Agregando evento al logger###########################
+                #add_event_logger(user_id, LoggerEvents.search_project, MODULE)
+                ################################################################
 
-            ###########Agregando evento al logger###########################
-            #add_event_logger(user_id, LoggerEvents.search_project, MODULE)
-            ################################################################
-
-            return jsonify([new_parent.serialize()])
-        except Exception as e:
-            print(e)
-            return jsonify({'server': 'ERROR'})
+                return jsonify([story.serialize()])
+            except Exception as e:
+                print(e)
+                return jsonify({'server': 'ERROR'})
 
 '''Elimina historia de su epica'''
 @app.route("/stories/remove_from_epic/<int:story_id>/",methods=['DELETE'])

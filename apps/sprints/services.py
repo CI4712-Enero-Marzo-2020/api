@@ -197,12 +197,12 @@ def update_criteria(criteria_id):
     if request.method == 'PUT':
         criteria = AcceptanceCriteria.query.get_or_404(criteria_id)
 
-        if request.form.get('description'):
-            description=request.form.get('description')
+        if request.json.get('description'):
+            description=request.json.get('description')
             criteria.description=description
 
-        if request.form.get('approved'):
-            approved=request.form.get('approved')
+        if request.json.get('approved'):
+            approved=request.json.get('approved')
             criteria.approved=approved
 
         try:
@@ -220,14 +220,14 @@ def update_criteria(criteria_id):
 @app.route("/test/update/<test_id>",methods= ['PUT'])
 def update_test(test_id):
     if request.method == 'PUT':
-        test = AcceptanceCriteria.query.get_or_404(test_id)
+        test = AcceptanceTest.query.get_or_404(test_id)
 
-        if request.form.get('description'):
-            description=request.form.get('description')
+        if request.json.get('description'):
+            description=request.json.get('description')
             test.description=description
 
-        if request.form.get('approved'):
-            approved=request.form.get('approved')
+        if request.json.get('approved'):
+            approved=request.json.get('approved')
             test.approved=approved
 
         try:

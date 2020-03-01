@@ -19,7 +19,7 @@ def get_all_by_project(project_id):
          return jsonify({'server': 'NO_CONTENT'})
 
 
-''' Cambiar clasificacion de una historia '''
+''' Cambiar clasificacion de una historia 
 @app.route("/stories/classification/<int:id_>",methods= ['PATCH'])
 def modify_class_story(id_):
     if request.method == 'PATCH':
@@ -34,7 +34,7 @@ def modify_class_story(id_):
             return jsonify(story.serialize())
         except:
             return jsonify({'server': 'ERROR'})
-
+'''
 ''' Agregar historia '''
 @app.route("/stories/add",methods=['POST'])
 def add_story():
@@ -50,9 +50,9 @@ def add_story():
             priority = 'low'
         epic_string=request.form.get('epic')
         if epic_string == "true":
-            epic == True
+            epic = True
         else:
-            epic == False
+            epic = False
         try:
             story = Story(
                 project_id = project_id,
@@ -72,8 +72,7 @@ def add_story():
             print(e)            
             return jsonify({'server': 'ERROR','response': e})
 
-
-''' Prioridad High a la Historia '''
+''' Prioridad High a la Historia 
 @app.route("/stories/high/<int:id_>",methods= ['PATCH'])
 def high_story(id_):
     if request.method == 'PATCH':
@@ -90,8 +89,8 @@ def high_story(id_):
             return jsonify(project.serialize())
         except:
             return jsonify({'server': 'ERROR'})
-
-''' Prioridad Medium a la Historia '''
+'''
+''' Prioridad Medium a la Historia 
 @app.route("/stories/medium/<int:id_>",methods= ['PATCH'])
 def medium_story(id_):
     if request.method == 'PATCH':
@@ -108,9 +107,9 @@ def medium_story(id_):
             return jsonify(project.serialize())
         except:
             return jsonify({'server': 'ERROR'})
+'''
 
-
-''' Prioridad Low a la Historia '''
+''' Prioridad Low a la Historia
 @app.route("/stories/low/<int:id_>",methods= ['PATCH'])
 def low_story(id_):
     if request.method == 'PATCH':
@@ -127,7 +126,8 @@ def low_story(id_):
             return jsonify(project.serialize())
         except:
             return jsonify({'server': 'ERROR'})
-
+ 
+ '''
 
 
 ''' Eliminar una historia '''
@@ -172,9 +172,24 @@ def update_story(id_):
         story = Story.query.get_or_404(id_)
         description=request.form.get('description')
         project_id=request.form.get('project_id')
+        priority_number=request.form.get('priority')
+        epic_string=request.form.get('epic')
+        if priority_number == 0:
+            priority = "high"
+        elif priority_number == 1:
+            priority = 'medium'
+        else:
+            priority = 'low'
+        epic_string=request.form.get('epic')
+        if epic_string == "true":
+            epic = True
+        else:
+            epic = False
 
         story.description=description
         story.project_id=project_id
+        story.epic=epic
+        story.priority=priority
         try:
             db.session.commit()
 
@@ -185,7 +200,7 @@ def update_story(id_):
             return jsonify(story.serialize())
         except Exception as e:
             print(e)
-            return jsonify({'server': 'ERROR'})
+            return jsonify({'server': 'ERROR','response': e})
 
 
 '''Agrega historia a una epica'''

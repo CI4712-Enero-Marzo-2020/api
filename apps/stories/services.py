@@ -186,10 +186,17 @@ def update_story(id_):
         else:
             epic = False
 
+        done_string=request.form.get('done')
+        if done_string == "true":
+            done = True
+        else:
+            done = False
+
         story.description=description
         story.project_id=project_id
         story.epic=epic
         story.priority=priority
+        story.done=done
         try:
             db.session.commit()
 

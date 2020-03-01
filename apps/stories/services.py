@@ -215,14 +215,14 @@ def add_to_epic(story_id, epic_id):
                 #add_event_logger(user_id, LoggerEvents.search_project, MODULE)
                 ################################################################
 
-            return jsonify([story.serialize()])
+            return jsonify(story.serialize())
         except Exception as e:
             print(e)
             return jsonify({'server': 'ERROR'})
 
 
 
-
+'''Elimina historia a una epica'''
 @app.route("/stories/remove_from_epic/<int:story_id>/",methods=['DELETE'])
 def remove_from_epic(story_id):
     if request.method == 'DELETE':

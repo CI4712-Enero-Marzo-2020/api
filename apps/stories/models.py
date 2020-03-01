@@ -47,7 +47,8 @@ class Story(db.Model):
             'priority':self.priority.value,
             'epic':self.epic,
             'done':self.done,
-            'date_created':self.date_created
+            'date_created':self.date_created,
+            'parent_id':self.parent_id
         }
 
 

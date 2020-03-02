@@ -6,7 +6,13 @@ from datetime import datetime
 
 class LoggerEvents(enum.Enum):
     add_project = "Agregar Proyecto"
+    add_sprint = "Agregar Sprint"
+    add_criteria = "Agregar Criterio de Aceptacion"
+    add_test = "Agregar Prueba de Aceptacion"
     update_project = "Modificar Proyecto"
+    update_sprint = "Modificar Sprint"
+    update_criteria = "Modificar Criterio de Aceptacion"
+    update_test = "Modificar Prueba de Aceptacion"
     activate_project = "Activar Proyecto"
     pause_project = "Pausar Proyecto"
     delete_project = "Eliminar Proyecto"

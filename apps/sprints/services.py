@@ -102,7 +102,7 @@ def add_criteria():
 
         user = UserA.query.get_or_404(user_id)
         if user.role != 'Scrum Team':
-            return jsonify({'server': 'Debe ser Scrum Team'})
+            return jsonify({'server': 'Debe ser Scrum Team'}), 405
 
         try:
             criteria = AcceptanceCriteria(
@@ -123,7 +123,14 @@ def add_criteria():
             print(e)            
             return jsonify({'server': 'ERROR'})
 
-
+@app.route("/criteria/delete/<criteria_id>",methods=['POST'])
+def delete_criteria(criteria_id):
+    try:
+        criteria=AcceptanceCriteria.query.filter_by(id=criteria_id).delete()
+        db.session.commit()
+        return jsonify(criteria), 200
+    except Exception as e:
+	    return(str(e))
 @app.route("/tests/add",methods=['POST'])
 def add_tests():
     if request.method == 'POST':
@@ -133,7 +140,7 @@ def add_tests():
         
         user = UserA.query.get_or_404(user_id)
         if user.role != 'Product Owner':
-            return jsonify({'server': 'ERROR'})
+            return jsonify({'server': 'Debe ser Product Owner'}), 405
 
         try:
             test = AcceptanceTest(
@@ -154,6 +161,14 @@ def add_tests():
             print(e)            
             return jsonify({'server': 'ERROR'})
 
+@app.route("/tests/delete/<test_id>",methods=['POST'])
+def delete_test(test_id):
+    try:
+        test=AcceptanceTest.query.filter_by(id=test_id).delete()
+        db.session.commit()
+        return jsonify(test), 200
+    except Exception as e:
+	    return(str(e))
 
 @app.route("/sprint/addstory/<sprint_id>/<story_id>",methods= ['PATCH'])
 def add_story_to_sprint(story_id, sprint_id):

@@ -44,7 +44,7 @@ def get_criteria_by_story(story_id):
     """
     criteria = AcceptanceCriteria.query.filter_by(story_id=story_id)
     if criteria.count() >0:
-        return  jsonify([criteria.serialize() for sprint in sprints])
+        return  jsonify([c.serialize() for c in criteria])
     else: 
          return jsonify({'server': 'NO_CONTENT'})
 

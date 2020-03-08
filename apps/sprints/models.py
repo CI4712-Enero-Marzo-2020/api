@@ -17,6 +17,8 @@ class Sprint(db.Model):
     stories = db.relationship('Story', backref='sprints', lazy=True, post_update=True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     closed = db.Column(db.Boolean)
+    tasks = db.relationship('Task', backref='sprints', lazy=True)
+
 
     def __init__(self, user_id, description, project_id, closed):
         self.user_id = user_id

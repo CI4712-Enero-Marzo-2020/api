@@ -1,7 +1,7 @@
 import os, enum
 from datetime import datetime
 from app import db
-from apps.user.models import UserA
+from apps.user.models import *
 from apps.projects.models import *
 from apps.stories.models import *
 

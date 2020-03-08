@@ -4,11 +4,14 @@ from app import db, app
 from flask import  request, jsonify,make_response
 from datetime import datetime
 from apps.sprints.models import *
-from apps.user.models import *
+from apps.user.models import UserA
+from apps.logger.services import add_event_logger
+from apps.logger.models import LoggerEvents
 
-Module = 'Task'
+MODULE = 'Tarea'
 
-@app.route("task/getbystory/<story_id>")
+@app.route("/task/getbystory/<story_id>")
+def get_tasks(story_id):
     tasks = Task.query.filter_by(story_id=story_id)
     if tasks.count() >0:
         return  jsonify([c.serialize() for c in tasks])
@@ -34,27 +37,28 @@ def add_tasks():
         task_status = request.json.get('task_status')
         task_class = request.json.get('task_class')
         if request.json.get('init_date'):
-            init_date = request.json.get('init_date')
-        end_date = request.json.get('end_date')
-        duration = (end_date - init_date).days
+            init_date = datetime.strptime(request.json.get('init_date'),'%m/%d/%y %H:%M:%S')
+        end_date = datetime.strptime(request.json.get('end_date'),'%m/%d/%y %H:%M:%S')
+        duration = int(str(end_date - init_date)[:2])
         est_time = request.json.get('est_time')
 
         #usuario que crea la tarea
         user_id = request.json.get('user_id')
         user_creator = UserA.query.get_or_404(user_id)
-        if user.role not in ['Scrum Master', 'Scrum Team']:
+        if user_creator.role not in ['Scrum Master', 'Scrum Team']:
             return jsonify({'server': 'Debe ser parte del equipo'}), 405
 
         #usuarios a los que se las asignan
         users = []
         if len(request.json.get('users'))>2:
             return make_response(jsonify('maximo 2 usuarios permitidos'), 404)
-        elif len(request.json.get('users'))=0:
+        elif len(request.json.get('users'))==0:
             pass
         else:    
             for i in request.json.get('users'):
                 user = UserA.query.get_or_404(i)
                 users.append(user)
+
         try:
             task = Task(
                         description= description,
@@ -67,10 +71,11 @@ def add_tasks():
                         end_date= end_date,
                         duration= duration,
                         est_time= est_time,
-                        users= users,
-                        user_id = user_id
+                        user_id = user_creator.id
             )
             db.session.add(task)
+            db.session.commit()
+            task.asignners= users
             db.session.commit()
 
             ###########Agregando evento al logger#######################

@@ -2,7 +2,7 @@ import os, enum
 from datetime import datetime
 from app import db
 from apps.stories.models import *
-from apps.user.models import UserA
+from apps.user.models import *
 from apps.sprints.models import *
 from sqlalchemy.orm import relationship
 
@@ -25,7 +25,6 @@ class TaskClass(enum.Enum):
     easy = "Sencilla"
     middle = "Media"
     hard = "Compleja"
-
 
 class Task(db.Model):
     __tablename__ = 'tasks'
@@ -55,19 +54,44 @@ class Task(db.Model):
     end_date = db.Column(db.DateTime)
     duration = db.Column(db.Integer)
     est_time = db.Column(db.Integer)
-    users = relationship("UserA", secondary="assigns")
     user_id = db.Column(db.Integer, db.ForeignKey('userA.id'))
 
 
+    def __init__(self, description,story_id,sprint_id,task_type,task_status,task_class,init_date,end_date,est_time,user_id, duration):
+        self.description =description
+        self.story_id = story_id
+        self.sprint_id = sprint_id
+        self.task_type = task_type
+        self.task_status = task_status
+        self.task_class = task_class
+        self.init_date = init_date
+        self.end_date = end_date
+        self.est_time = est_time
+        self.user_id = user_id
+        self.duration = duration
 
-class Assign(BaseModel):
-    __tablename__ = 'assigns'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('userA.id'))
-    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'))
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
 
-    user = relationship(UserA, backref=backref("assigns", cascade="all, delete-orphan"))
-    task = relationship(Task, backref=backref("assigns", cascade="all, delete-orphan"))
-
-
-
+    def serialize(self):
+        users = []
+        try:
+            assign=assign.query.filter(task_id=self.id)
+            for i in assign:
+                users.append(i.user_id)
+        except:
+            pass
+        
+        return{
+            'description': self.description,
+            'story_id': self.story_id,
+            'sprint_id': self.sprint_id,
+            'task_type': self.task_type,
+            'task_status': self.task_status,
+            'task_class' : self.task_class,
+            'init_date' : self.init_date,
+            'end_date' : self.end_date,
+            'est_time' : self.est_time,
+            'user_id' : self.user_id,
+            'users' : users 
+        }

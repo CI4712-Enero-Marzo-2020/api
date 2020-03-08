@@ -17,6 +17,8 @@ from apps.projects.services import *
 from apps.user.services import *
 from apps.stories.services import * 
 from apps.sprints.services import *
+from apps.tasks.services import *
+from apps.logger.services import *
 
 ########################################
 # Para caso de desear agregar interface.

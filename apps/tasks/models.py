@@ -56,6 +56,7 @@ class Task(db.Model):
     duration = db.Column(db.Integer)
     est_time = db.Column(db.Integer)
     users = relationship("UserA", secondary="assigns")
+    user_id = db.Column(db.Integer, db.ForeignKey('userA.id'))
 
 
 

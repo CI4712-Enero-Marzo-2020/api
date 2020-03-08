@@ -9,6 +9,7 @@ class LoggerEvents(enum.Enum):
     add_sprint = "Agregar Sprint"
     add_criteria = "Agregar Criterio de Aceptacion"
     add_test = "Agregar Prueba de Aceptacion"
+    add_task = "Agregar Tarea"
     update_project = "Modificar Proyecto"
     update_sprint = "Modificar Sprint"
     update_criteria = "Modificar Criterio de Aceptacion"

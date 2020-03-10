@@ -1,7 +1,7 @@
 import os, enum
 from datetime import datetime
 from app import db
-from apps.user.models import UserA
+from apps.user.models import *
 from apps.projects.models import *
 
 class StoryPriority(enum.Enum):
@@ -33,6 +33,7 @@ class Story(db.Model):
     criteria = db.relationship('AcceptanceCriteria', backref='stories', lazy=True, post_update=True)
     # # relacion one story - many tests
     tests = db.relationship('AcceptanceTest', backref='stories', lazy=True, post_update=True)
+    tasks = db.relationship('Task', backref='stories', lazy=True, post_update=True)
 
 
     parent_id = db.Column(db.Integer, db.ForeignKey('stories.id'))

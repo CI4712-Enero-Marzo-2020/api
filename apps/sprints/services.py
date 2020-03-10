@@ -5,9 +5,9 @@ from flask import  request, jsonify
 from datetime import datetime
 from apps.logger.models import Logger, LoggerEvents
 from apps.logger.services import add_event_logger
-
+from flask_cors import CORS, cross_origin
 MODULE = 'Sprint'
-
+cors = CORS(app)
 @app.route("/sprint/getbyproject/<project_id>")
 def get_sprints_by_project(project_id):
     """
@@ -23,7 +23,25 @@ def get_sprints_by_project(project_id):
     else: 
          return jsonify({'server': 'NO_CONTENT'})
 
+@app.route("/sprint/active/<project_id>")
+def get_sprint_active_by_project(project_id):
+
+    sprints = Sprint.query.filter_by(project_id=project_id).filter_by(closed=False)
+    if sprints.count() > 0:
+        return  jsonify([sprint.serialize() for sprint in sprints])
+    else: 
+         return jsonify({'server': 'NO_CONTENT'})
+
 @app.route("/sprint/<sprint_id>")
+def get_sprint(sprint_id):
+
+    sprints = Sprint.query.filter_by(id=sprint_id)
+    if sprints.count() >0:
+        return  jsonify([sprint.serialize() for sprint in sprints])
+    else: 
+         return jsonify({'server': 'NO_CONTENT'})
+
+@app.route("/sprint/getstories/<sprint_id>")
 def get_stories_by_sprint(sprint_id):
 
     stories = Story.query.filter_by(sprint_id=sprint_id)
@@ -131,6 +149,7 @@ def delete_criteria(criteria_id):
         return jsonify(criteria), 200
     except Exception as e:
 	    return(str(e))
+
 @app.route("/tests/add",methods=['POST'])
 def add_tests():
     if request.method == 'POST':
@@ -170,9 +189,9 @@ def delete_test(test_id):
     except Exception as e:
 	    return(str(e))
 
-@app.route("/sprint/addstory/<sprint_id>/<story_id>",methods= ['PATCH'])
+@app.route("/sprint/addstory/<sprint_id>/<story_id>",methods= ['GET'])
 def add_story_to_sprint(story_id, sprint_id):
-    if request.method == 'PATCH':
+    if request.method == 'GET':
         try:
             story= Story.query.get_or_404(story_id)
             story.sprint_id=sprint_id
@@ -187,12 +206,13 @@ def update_sprint(sprint_id):
     if request.method == 'PUT':
         sprint = Sprint.query.get_or_404(sprint_id)
 
-        if request.form.get('description'):
-            description=request.form.get('description')
+        if request.json.get('description'):
+            description=request.json.get('description')
             sprint.description=description
 
-        if request.form.get('closed'):
-            closed=request.form.get('closed')
+        if request.json.get('closed'):
+            print("closed")
+            closed=request.json.get('closed')
             sprint.closed=closed
 
         try:

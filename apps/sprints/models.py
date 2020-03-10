@@ -36,6 +36,7 @@ class Sprint(db.Model):
                 'id':user.id,
                 'username':user.username
             },
+            'project_id': self.project_id,
             'date_created':self.date_created,
             'closed':self.closed
         }

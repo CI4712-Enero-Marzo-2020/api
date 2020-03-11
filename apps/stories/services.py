@@ -18,23 +18,6 @@ def get_all_by_project(project_id):
     else: 
          return jsonify({'server': 'NO_CONTENT'})
 
-
-''' Cambiar clasificacion de una historia 
-@app.route("/stories/classification/<int:id_>",methods= ['PATCH'])
-def modify_class_story(id_):
-    if request.method == 'PATCH':
-        try:
-            story= Story.query.get_or_404(id_)
-            if story.epic == True :
-                story.epic = False 
-            else:
-                story.epic = True
-            db.session.commit()
-
-            return jsonify(story.serialize())
-        except:
-            return jsonify({'server': 'ERROR'})
-'''
 ''' Agregar historia '''
 @app.route("/stories/add",methods=['POST'])
 def add_story():
@@ -65,64 +48,6 @@ def add_story():
         except Exception as e:
             print(e)            
             return jsonify({'server': 'ERROR','response': e})
-
-''' Prioridad High a la Historia 
-@app.route("/stories/high/<int:id_>",methods= ['PATCH'])
-def high_story(id_):
-    if request.method == 'PATCH':
-        try:
-            story= Story.query.get_or_404(id_)
-            story.priority=StoryPriority.high
-            db.session.commit()
-
-            user_id=story.user_id
-            ###########Agregando evento al logger##########################
-            add_event_logger(user_id, LoggerEvents.high_story, MODULE)
-            ###############################################################
-
-            return jsonify(project.serialize())
-        except:
-            return jsonify({'server': 'ERROR'})
-'''
-''' Prioridad Medium a la Historia 
-@app.route("/stories/medium/<int:id_>",methods= ['PATCH'])
-def medium_story(id_):
-    if request.method == 'PATCH':
-        try:
-            story= Story.query.get_or_404(id_)
-            story.priority=StoryPriority.medium
-            db.session.commit()
-
-            user_id=story.user_id
-            ###########Agregando evento al logger##########################
-            add_event_logger(user_id, LoggerEvents.medium_story, MODULE)
-            ###############################################################
-
-            return jsonify(project.serialize())
-        except:
-            return jsonify({'server': 'ERROR'})
-'''
-
-''' Prioridad Low a la Historia
-@app.route("/stories/low/<int:id_>",methods= ['PATCH'])
-def low_story(id_):
-    if request.method == 'PATCH':
-        try:
-            story= Story.query.get_or_404(id_)
-            story.priority=StoryPriority.low
-            db.session.commit()
-
-            user_id=story.user_id
-            ###########Agregando evento al logger##########################
-            add_event_logger(user_id, LoggerEvents.low_story, MODULE)
-            ###############################################################
-
-            return jsonify(project.serialize())
-        except:
-            return jsonify({'server': 'ERROR'})
- 
- '''
-
 
 ''' Eliminar una historia '''
 @app.route("/stories/delete/<int:id_>",methods= ['DELETE'])

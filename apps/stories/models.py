@@ -5,9 +5,9 @@ from apps.user.models import *
 from apps.projects.models import *
 
 class StoryPriority(enum.Enum):
-    high = 0
-    medium = 1
-    low = 2
+    high = 'high'
+    medium = 'medium'
+    low = 'low'
 
 
 class Story(db.Model):

@@ -19,6 +19,13 @@ class Sprint(db.Model):
     closed = db.Column(db.Boolean)
     tasks = db.relationship('Task', backref='sprints', lazy=True)
 
+    #relacion one sprint - many reuniones de retrospectiva
+    retrospective_meetings = db.relationship('Retrospective', backref='sprint')
+    #relacion one sprint - many reuniones diarias
+    daily_meetings = db.relationship('Daily', backref='sprint')
+    #relacion one sprint - one planning
+    planning = relationship('Planning', uselist=False, backref='sprint')
+
 
     def __init__(self, user_id, description, project_id, closed):
         self.user_id = user_id

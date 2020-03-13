@@ -17,22 +17,131 @@ def get_planning_by_sprint(sprint_id):
     if request.method == 'GET':
         planning = Planning.get_or_404(sprint_id=sprint_id)
         dic = [planning.serialize()]
-        results = PlanningResults.query.filter_by(planning_id=planning.id)
+        results = PlanningResult.query.filter_by(planning_id=planning.id)
         if results.count() > 0:
             dic.extend([result.serialize() for result in results])
         return jsonify(dic)
 
 
+''' Agregar planning '''
+@app.route("/meetings/planning/add/",methods=['POST'])
+def add_planning():
+    if request.method == 'POST':
+        sprint_id = request.form.get('sprint_id')
+        date =  request.form.get('date')
+
+        try:
+            planning = Planning(
+                sprint_id = sprint_id,
+                date= date
+            )
+            db.session.add(planning)
+            db.session.commit()
+
+            ###########Agregando evento al logger#######################
+            #add_event_logger(sprint_id, LoggerEvents.add_planningResult, MODULE)
+            ############################################################
+
+            return jsonify(planning.serialize())
+        except:
+             return jsonify({'server': 'ERROR'})
+
+
+''' Modificar planning '''
+@app.route("/meetings/planning/<int:_id>",methods=['PUT'])
+def update_planning(_id):
+    if request.method == 'PUT':
+        planning =  Planning.query.get_or_404(id=_id)
+        sprint_id = request.form.get('sprint_id')
+        date =  request.form.get('date')
+
+        planning.sprint_id = sprint_id
+        planning.date= date
+
+        db.session.commit()
+
+        ###########Agregando evento al logger#######################
+        #add_event_logger(sprint_id, LoggerEvents.add_planningResult, MODULE)
+        ############################################################
+
+        return jsonify(planning.serialize())
+
+
 ''' Agregar resultado de planning '''
+@app.route("/meetings/planning/<int:planning_id>/results/add/",methods=['POST'])
+def add_planningResult(planning_id):
+    if request.method == 'POST':
+        planning_id = planning_id
+        subject = request.form.get('subject')
+        activity = request.form.get('activity')
+        user_story_id = request.form.get('user_story_id')
+        assigned = request.form.get('assigned')
+
+        try:
+            planningResult = PlanningResult(
+                planning_id = planning_id,
+                subject = subject,
+                activity = activity,
+                user_story_id = user_story_id,
+                assigned = assigned
+            )
+            db.session.add(planningResult)
+            db.session.commit()
+
+            ###########Agregando evento al logger#######################
+            #add_event_logger(sprint_id, LoggerEvents.add_planningResult, MODULE)
+            ############################################################
+
+            return jsonify(planningResult.serialize())
+        except:
+             return jsonify({'server': 'ERROR'})
 
 
 ''' Buscar resultado de planning '''
 
 
 ''' Modificar resultado de planning '''
+@app.route("/meetings/planning/results/<int:id_>",methods= ['PUT'])
+def update_planningResult(id_):
+    if request.method == 'PUT':
+        result = PlanningResult.query.get_or_404(id=id_)
+        planning_id = request.form.get('planning_id')
+        subject = request.form.get('subject')
+        activity = request.form.get('activity')
+        user_story_id = request.form.get('user_story_id')
+        assigned = request.form.get('assigned')
+
+        result.planning_id = planning_id
+        result.subject = subject
+        result.activity = activity
+        result.user_story_id = user_story_id
+        result.assigned = assigned
+
+        db.session.commit()
+
+        ###########Agregando evento al logger##########################
+        #add_event_logger(user_id, LoggerEvents.update_planningResult, MODULE)
+        ###############################################################
+
+        return jsonify(result.serialize())
 
 
 ''' Eliminar resultado de planning '''
+@app.route("/meetings/planning/results/delete/<id_>", methods= ['DELETE'])
+def delete_planningResult(id_):
+   if request.method == 'DELETE':
+        planningResult = PlanningResult.query.get_or_404(id=id_)
+        try:
+            db.session.delete(planningResult)
+            db.session.commit()
+
+            ###########Agregando evento al logger###########################
+            #add_event_logger(user_id, LoggerEvents.delete_daily, MODULE)
+            ################################################################
+
+            return jsonify({'server': '200_OK'})
+        except:
+            return jsonify({'server': 'ERROR'})
 
 
 ''' Listar todas las reuniones de retrospectiva de un sprint '''
@@ -47,15 +156,84 @@ def get_retrospectives_by_sprint(sprint_id):
 
 
 ''' Agregar  reunion de retrospectiva '''
+@app.route("/meetings/retrospectives/add/",methods=['POST'])
+def add_retrospective():
+    if request.method == 'POST':
+        sprint_id = request.form.get('sprint_id')
+        date = request.form.get('date')
+        method = request.form.get('method')
+        positive = request.form.get('positive')
+        negative = request.form.get('negative')
+        decision = request.form.get('decision')
+
+        try:
+            retrospective = Retrospective(
+                sprint_id = sprint_id,
+                date = date,
+                method = method,
+                positive = positive,
+                negative = negative,
+                decision = decision
+            )
+            db.session.add(retrospective)
+            db.session.commit()
+
+            ###########Agregando evento al logger#######################
+            #add_event_logger(sprint_id, LoggerEvents.add_retrospective, MODULE)
+            ############################################################
+
+            return jsonify(retrospective.serialize())
+        except:
+             return jsonify({'server': 'ERROR'})
 
 
 ''' Buscar reunion de retrospectiva '''
 
 
 ''' Modificar reunion de retrospectiva '''
+@app.route("/meetings/retrospectives/<int:_id>",methods=['PUT'])
+def update_retrospective(_id):
+    if request.method == 'PUT':
+        retrospective = Retrospective.query.get_or_404(_id)
+        sprint_id = request.form.get('sprint_id')
+        date = request.form.get('date')
+        method = request.form.get('method')
+        positive = request.form.get('positive')
+        negative = request.form.get('negative')
+        decision = request.form.get('decision')
+
+        retrospective.sprint_id = sprint_id
+        retrospective.date = date
+        retrospective.method = method
+        retrospective.positive = positive
+        retrospective.negative = negative
+        retrospective.decision = decision
+
+        db.session.commit()
+
+        ###########Agregando evento al logger#######################
+        #add_event_logger(sprint_id, LoggerEvents.add_retrospective, MODULE)
+        ############################################################
+
+        return jsonify(retrospective.serialize())
 
 
 ''' Eliminar reunion de retrospectiva '''
+@app.route("/meetings/retrospectives/delete/<id_>", methods= ['DELETE'])
+def delete_retrospective(id_):
+   if request.method == 'DELETE':
+        retrospective = Retrospective.query.get_or_404(id=id_)
+        try:
+            db.session.delete(retrospective)
+            db.session.commit()
+
+            ###########Agregando evento al logger###########################
+            #add_event_logger(user_id, LoggerEvents.delete_daily, MODULE)
+            ################################################################
+
+            return jsonify({'server': '200_OK'})
+        except:
+            return jsonify({'server': 'ERROR'})
 
 
 ''' Listar todos los dailies de un sprint '''
@@ -141,6 +319,6 @@ def delete_daily(id_):
             #add_event_logger(user_id, LoggerEvents.delete_daily, MODULE)
             ################################################################
 
-            return jsonify({'server': '200'})
+            return jsonify({'server': '200_OK'})
         except:
             return jsonify({'server': 'ERROR'})

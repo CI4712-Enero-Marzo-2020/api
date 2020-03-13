@@ -5,7 +5,7 @@ from apps.user.models import UserA
 from apps.sprints.models import Sprint
 
 
-class PlanningResults(db.Model):
+class PlanningResult(db.Model):
     __tablename__ = 'planningResults'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -39,7 +39,7 @@ class Planning(db.Model):
     __tablename__ = 'plannings'
 
     id = db.Column(db.Integer, primary_key=True)
-    results = db.relationship('PlanningResults', backref='planning')
+    results = db.relationship('PlanningResult', backref='planning')
     date = db.Column(db.DateTime, nullable=False)
     ###### RELACIONES CON SPRINT    
     #relacion one sprint - one planning meeting

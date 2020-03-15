@@ -9,7 +9,7 @@ def test_stories_work():
     assert(True)
 
 
-def test_add_story(client, init_database):
+def test_stories_add_story(client, init_database):
     rv = client.post('/stories/add', 
         data = dict(
             description = 'Test description',
@@ -25,7 +25,7 @@ def test_add_story(client, init_database):
     assert new_story.priority == StoryPriority.high
     app.db.session.commit()
 
-def test_delete_story(client, init_database):
+def test_stories_delete_story(client, init_database):
 
     rv = client.post('/stories/add', 
         data = dict(
@@ -44,74 +44,84 @@ def test_delete_story(client, init_database):
     app.db.session.commit()
 
 
-def test_change_story_epicness(client, init_database):
+def test_stories_change_story_epicness(client, init_database):
 
     rv = client.post('/stories/add', 
         data = dict(
             description = 'Test description1',
             project_id = 1,
-            epic = False,
+            epic = 'false',
             priority = 'high'
         )
     )
 
     response_json = json.loads(rv.data.decode('utf-8'))
-    new_story_id = response_json['id']
-    rv = client.patch("/stories/classification/" + str(new_story_id))
 
-    response_json = json.loads(rv.data.decode('utf-8'))
-    modified_story = Story.query.get(response_json['id'])
-    
-    assert modified_story.epic == True
-    app.db.session.commit()
-
-
-def test_update_story(client, init_database):
-
-    rv = client.post('/stories/add', 
-        data = dict(
-            description = 'Test description1',
-            project_id = 1,
-            epic = False,
-            priority = 'high'
-        )
-    )
-
-    response_json = json.loads(rv.data.decode('utf-8'))
     new_story_id = response_json['id']
     rv = client.put("/stories/update/" + str(new_story_id),
         data = dict(
+            project_id = 1,
             description = 'Modified description',
-            project_id = 2,
+            epic = 'true',
+            priority = 'high'
         )
     )
 
     response_json = json.loads(rv.data.decode('utf-8'))
     modified_story = Story.query.get(response_json['id'])
     
-    assert modified_story.description == 'Modified description'
-    assert modified_story.project_id == 2
+    assert modified_story.epic
     app.db.session.commit()
 
-def test_add_to_epic(client, init_database):
+
+def test_stories_update_story(client, init_database):
 
     rv = client.post('/stories/add', 
         data = dict(
             description = 'Test description1',
             project_id = 1,
-            epic = False,
+            epic = 'false',
             priority = 'high'
         )
     )
-    parent_story_id = json.loads(rv.data.decode('utf-8'))['id']
-    rv = client.patch("/stories/classification/" + str(parent_story_id))
+
+    response_json = json.loads(rv.data.decode('utf-8'))
+
+    new_story_id = response_json['id']
+    rv = client.put("/stories/update/" + str(new_story_id),
+        data = dict(
+            project_id = 1,
+            description = 'Modified description',
+            epic = 'true',
+            priority = 'high'
+        )
+    )
+
+    response_json = json.loads(rv.data.decode('utf-8'))
+    modified_story = Story.query.get(response_json['id'])
+    
+    assert modified_story.epic
+    app.db.session.commit()
+
+def test_stories_add_to_epic(client, init_database):
+
+    rv = client.post('/stories/add', 
+        data = dict(
+            description = 'Test description1',
+            project_id = 1,
+            epic = 'true',
+            priority = 'high'
+        )
+    )
+    response_json = json.loads(rv.data.decode('utf-8'))
+    parent_story_id = response_json['id']
     parent_story = Story.query.get(parent_story_id)
 
     rv = client.post('/stories/add', 
         data = dict(
             description = 'Test description1',
             project_id = 1,
-            epic = False,
+            epic = 'false',
             priority = 'high'
         )
     )
@@ -128,7 +138,44 @@ def test_add_to_epic(client, init_database):
 
     app.db.session.commit()
 
-def test_remove_from_epic(client, init_database):
+def test_stories_add_to_non_epic(client, init_database):
+    # Prueba tipo Frontera
+    rv = client.post('/stories/add', 
+        data = dict(
+            description = 'Test description1',
+            project_id = 1,
+            epic = 'false',
+            priority = 'high'
+        )
+    )
+    response_json = json.loads(rv.data.decode('utf-8'))
+    parent_story_id = response_json['id']
+    parent_story = Story.query.get(parent_story_id)
+
+    rv = client.post('/stories/add', 
+        data = dict(
+            description = 'Test description1',
+            project_id = 1,
+            epic = 'false',
+            priority = 'high'
+        )
+    )
+    child_story_id = json.loads(rv.data.decode('utf-8'))['id']
+    child_story = Story.query.get(child_story_id)
+    
+    rv = client.put("/stories/add_to_epic/"+str(child_story_id)+"/"+str(parent_story_id))
+
+    response_json = json.loads(rv.data.decode('utf-8'))
+    
+    print(response_json)
+
+    error_message = response_json['server']
+
+    assert 'ERROR' in error_message
+
+    app.db.session.commit()
+
+def test_stories_remove_from_epic(client, init_database):
 
     rv = client.post('/stories/add', 
         data = dict(
@@ -163,25 +210,24 @@ def test_remove_from_epic(client, init_database):
 
     app.db.session.commit()
 
-def test_get_children_from_epic(client, init_database):
+def test_stories_get_children_from_epic(client, init_database):
 
     rv = client.post('/stories/add', 
         data = dict(
             description = 'Test description1',
             project_id = 1,
-            epic = False,
+            epic = 'true',
             priority = 'high'
         )
     )
     parent_story_id = json.loads(rv.data.decode('utf-8'))['id']
-    rv = client.patch("/stories/classification/" + str(parent_story_id))
     parent_story = Story.query.get(parent_story_id)
 
     rv = client.post('/stories/add', 
         data = dict(
             description = 'Test description1',
             project_id = 1,
-            epic = False,
+            epic = 'false',
             priority = 'high'
         )
     )
@@ -196,25 +242,25 @@ def test_get_children_from_epic(client, init_database):
 
     app.db.session.commit()
 
-def test_get_parent_from_child(client, init_database):
+def test_stories_get_parent_from_child(client, init_database):
 
     rv = client.post('/stories/add', 
         data = dict(
             description = 'Test description1',
             project_id = 1,
-            epic = False,
+            epic = 'true',
             priority = 'high'
         )
     )
     parent_story_id = json.loads(rv.data.decode('utf-8'))['id']
-    rv = client.patch("/stories/classification/" + str(parent_story_id))
+    
     parent_story = Story.query.get(parent_story_id)
 
     rv = client.post('/stories/add', 
         data = dict(
             description = 'Test description1',
             project_id = 1,
-            epic = False,
+            epic = 'false',
             priority = 'high'
         )
     )

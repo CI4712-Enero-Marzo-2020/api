@@ -5,10 +5,10 @@ import pytest
 
 import app
 
-def test_tests_work():
+def test_app_work():
 	assert(True)
 
-def test_empty_db(client):
+def test_app_empty_db(client):
 	rv = client.get('/')
 	assert rv.data != None
 

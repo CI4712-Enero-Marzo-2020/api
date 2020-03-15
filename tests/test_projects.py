@@ -11,7 +11,7 @@ def test_projects_work():
     assert(True)
 
 
-def test_add_project(client, init_database):
+def test_projects_add_project(client, init_database):
     rv = client.post('/projects/add', 
         data = dict(
             description = 'Test description',
@@ -26,7 +26,7 @@ def test_add_project(client, init_database):
     assert new_project.status == ProjectStatus.active
     app.db.session.commit()
 
-def test_get_all_by_user(client, init_database):
+def test_projects_get_all_by_user(client, init_database):
     test_user_id = 1
     rv = client.post('/projects/add', 
         data = dict(
@@ -49,7 +49,7 @@ def test_get_all_by_user(client, init_database):
     assert new_projects[1].description == 'Test description2'
     app.db.session.commit()
 
-def test_pause_project(client, init_database):
+def test_projects_pause_project(client, init_database):
 
     rv = client.post('/projects/add', 
         data = dict(
@@ -66,7 +66,7 @@ def test_pause_project(client, init_database):
     assert paused_project.status == ProjectStatus.paused
     app.db.session.commit()
 
-def test_reactivate_project(client, init_database):
+def test_projects_reactivate_project(client, init_database):
 
     rv = client.post('/projects/add', 
         data = dict(
@@ -84,7 +84,7 @@ def test_reactivate_project(client, init_database):
     assert reactivated_project.status == ProjectStatus.active
     app.db.session.commit()
 
-def test_delete_project(client, init_database):
+def test_projects_delete_project(client, init_database):
 
     rv = client.post('/projects/add', 
         data = dict(
@@ -101,7 +101,7 @@ def test_delete_project(client, init_database):
     assert deleted_project is None
     app.db.session.commit()
 
-def test_update_project(client, init_database):
+def test_projects_update_project(client, init_database):
 
     rv = client.post('/projects/add', 
         data = dict(

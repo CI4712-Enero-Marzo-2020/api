@@ -2,7 +2,6 @@ alembic==1.4.0
 appdirs==1.4.3
 astroid==2.3.3
 attrs==19.3.0
-black==19.10b0
 certifi==2019.11.28
 Click==7.0
 Flask==1.1.1

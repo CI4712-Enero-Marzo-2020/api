@@ -10,8 +10,8 @@ app.config.from_object(APP_SETTINGS)
 migrate = Migrate(app, db)
 manager = Manager(app)
 
-manager.add_command('db', MigrateCommand)
+manager.add_command("db", MigrateCommand)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     manager.run()

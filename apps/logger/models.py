@@ -22,19 +22,17 @@ class LoggerEvents(enum.Enum):
     user_login = "Inicio de Sesion"
     user_role_assign = "Rol Asignado"
 
+
 class Logger(db.Model):
-    __tablename__ = 'logger'
+    __tablename__ = "logger"
 
     id = db.Column(db.Integer, primary_key=True)
-    user = db.Column(db.Integer, db.ForeignKey('userA.id'))
+    user = db.Column(db.Integer, db.ForeignKey("userA.id"))
     event = db.Column(
-        db.Enum(LoggerEvents), 
-        default= LoggerEvents.user_login,
-        nullable=False
+        db.Enum(LoggerEvents), default=LoggerEvents.user_login, nullable=False
     )
     date = db.Column(db.DateTime, default=datetime.utcnow)
     loged_module = db.Column(db.String(100), nullable=False)
-
 
     def __init__(self, user, event, loged_module):
         self.user = user
@@ -42,13 +40,13 @@ class Logger(db.Model):
         self.loged_module = loged_module
 
     def __repr__(self):
-        return '<id {}>'.format(self.id)
+        return "<id {}>".format(self.id)
 
     def serialize(self):
         return {
-            'id': self.id, 
-            'user': UserA.query.get_or_404(self.user).username,
-            'event': self.event.value,
-            'date':self.date,
-            'loged_module':self.loged_module
+            "id": self.id,
+            "user": UserA.query.get_or_404(self.user).username,
+            "event": self.event.value,
+            "date": self.date,
+            "loged_module": self.loged_module,
         }

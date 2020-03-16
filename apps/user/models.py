@@ -12,7 +12,8 @@ class UserA(db.Model):
     password = db.Column(db.String(100), nullable=False)
     projects = db.relationship('Project', backref='userA') 
     logger = db.relationship('Logger', backref='userA') 
-    sprint = db.relationship('Sprint', backref='userA') 
+    sprint = db.relationship('Sprint', backref='userA')
+    teams = db.relationship('Team', secondary="users")
 
     def __init__(self,username,first_name,last_name,role,password):
         self.username = username

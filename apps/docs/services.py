@@ -4,6 +4,54 @@ from app import db, app
 from datetime import datetime
 from flask import  request, jsonify, json, url_for
 
+@app.route('/docs/getall/team',methods=['GET'])
+def getall_teams():
+    try:
+        teams = Team.query.all()
+        return  jsonify([team.serialize() for team in teams])
+    except Exception as e:
+	    return(str(e))
+    
+@app.route('/docs/getall/team/test',methods=['GET'])
+def teams_test():
+    # Crea usuario
+    user = UserA('usuario','nombre','apellido','Project owner','clave')
+    db.session.add(user)
+    db.session.commit()
+    # Crea documento
+    doc = Documentation('Documento','metodo',0.1,10,'metafora')
+    db.session.add(doc)
+    db.session.commit()
+    # Crea equipo
+    team = Team('Equipo 1')
+    db.session.add(team)
+    db.session.commit()
+    # Mete equipo en documento
+    doc.teams.append(team)
+    db.session.add(doc)
+    db.session.commit()
+    # Mete usuario en equipo
+    team.users.append(user)
+    db.session.add(team)
+    db.session.commit()
+
+    try:
+        teams = Team.query.all()
+        return  jsonify([team.serialize() for team in teams])
+    except Exception as e:
+	    return(str(e))
+
+
+@app.route('/docs/teams/<id>',methods=['GET'])
+def get_doc_team(id):
+    try:
+        doc = Documentation.query.filter_by(project_id=id).first()
+        print(doc.serialize())
+        data = doc.serialize()
+        return  jsonify(data['teams'])
+    except Exception as e:
+	    return(str(e))
+
 @app.route('/docs/getall')
 def getall_docs():
     try:
@@ -345,10 +393,10 @@ def add_diag():
 def delete_doc(id_):
 
     doc = Documentation.query.get_or_404(id_)
-    intro = Intro.query.filter_by(doc_id=doc.id).first()
+    # intro = Intro.query.filter_by(doc_id=doc.id).first()
     try:
-        # db.session.delete(doc)
-        db.session.delete(intro)
+        db.session.delete(doc)
+        # db.session.delete(intro)
         db.session.commit()
         return jsonify({'server': '200'})
     except:

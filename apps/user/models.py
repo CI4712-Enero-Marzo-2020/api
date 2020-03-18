@@ -22,7 +22,7 @@ class UserA(db.Model):
     sprint = db.relationship('Sprint', backref='userA') 
     task_created = db.relationship('Task', backref='userA') 
     tasks = relationship("Task", secondary=assign, backref=db.backref('asignners', lazy='dynamic'))
-
+    teams = db.relationship('Team', secondary="users")
 
     def __init__(self,username,first_name,last_name,role,password):
         self.username = username

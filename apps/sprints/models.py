@@ -18,7 +18,10 @@ class Sprint(db.Model):
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     closed = db.Column(db.Boolean)
     tasks = db.relationship('Task', backref='sprints', lazy=True)
-
+    init_date = db.Column(db.DateTime, default=datetime.utcnow)
+    end_date = db.Column(db.DateTime)
+    duration = db.Column(db.Integer)
+    est_time = db.Column(db.Integer)
 
     def __init__(self, user_id, description, project_id, closed):
         self.user_id = user_id

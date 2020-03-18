@@ -32,7 +32,7 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text)
     #relacion one task - one story OBLIGATORIO
-    story_id = db.Column(db.Integer, db.ForeignKey('stories.id'), nullable=False)
+    #story_id = db.Column(db.Integer, db.ForeignKey('stories.id'), nullable=False)
     #relacion one task - one sprint OBLIGATORIO
     sprint_id = db.Column(db.Integer, db.ForeignKey('sprints.id'), nullable=False)
     task_type = db.Column(
@@ -50,10 +50,10 @@ class Task(db.Model):
         default= TaskClass.easy,
         nullable=False
     )
-    init_date = db.Column(db.DateTime, default=datetime.utcnow)
-    end_date = db.Column(db.DateTime)
-    duration = db.Column(db.Integer)
-    est_time = db.Column(db.Integer)
+    # init_date = db.Column(db.DateTime, default=datetime.utcnow)
+    # end_date = db.Column(db.DateTime)
+    # duration = db.Column(db.Integer)
+    # est_time = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('userA.id'))
 
 

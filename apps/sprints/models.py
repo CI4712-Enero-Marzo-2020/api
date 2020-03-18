@@ -20,14 +20,15 @@ class Sprint(db.Model):
     tasks = db.relationship('Task', backref='sprints', lazy=True)
     init_date = db.Column(db.DateTime, default=datetime.utcnow)
     end_date = db.Column(db.DateTime)
-    duration = db.Column(db.Integer)
-    est_time = db.Column(db.Integer)
+    duration = db.Column(db.Integer, default=0)
+    est_time = db.Column(db.Integer, default=0)
 
-    def __init__(self, user_id, description, project_id, closed):
+    def __init__(self, user_id, description, project_id, closed, end_date):
         self.user_id = user_id
         self.description = description
         self.project_id = project_id
         self.closed = closed
+        self.end_date = end_date
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -43,6 +44,10 @@ class Sprint(db.Model):
             },
             'project_id': self.project_id,
             'date_created':self.date_created,
+            'init_date': self.init_date,
+            'end_date': self.end_date,
+            'duration': self.duration,
+            'est_time': self.est_time,
             'closed':self.closed
         }
 

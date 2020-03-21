@@ -17,11 +17,11 @@ MODULE = "Reunion"
 @app.route("/meetings/planning/<int:sprint_id>", methods=["GET"])
 def get_planning_by_sprint(sprint_id):
     if request.method == "GET":
-        planning = Planning.query.filter_by(sprint_id=sprint_id)
-        dic = [planning.first().serialize()]
-        results = PlanningResult.query.filter_by(planning_id=planning.first().id)
+        planning = Planning.query.filter_by(sprint_id=sprint_id).first()
+        dic = {'planning':planning.serialize()}
+        results = PlanningResult.query.filter_by(planning_id=planning.id)
         if results.count() > 0:
-            dic.extend([result.serialize() for result in results])
+            dic['results'] = [item.serialize() for item in results.all()]
         return jsonify(dic)
 
 

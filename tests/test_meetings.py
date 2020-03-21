@@ -2,6 +2,7 @@ import sys, os, tempfile, pytest, json
 import app
 import apps.projects.services as services
 import datetime
+from pprint import pprint
 from apps.meetings.models import *
 from apps.user.models import UserA as User
 
@@ -28,12 +29,40 @@ def test_meetings_get_plannings_by_sprint(client, init_database):
     response_json = json.loads(rv.data.decode("utf-8"))
     new_meeting = Planning.query.get(response_json["id"])
 
+    data = dict(
+        planning_id=new_meeting.id,
+        subject="sub",
+        activity="act",
+        user_story_id="1",
+        assigned="bob",
+    )
+    rv = client.post(
+        "/meetings/planning/" + str(new_meeting.id) + "/results/add", data=data
+    )
+    data = dict(sprint_id="1", date="Tue, 03 Mar 2020 00:00:00 GMT")
+    rv = client.post("/meetings/planning/add", data=data)
+
+
+    data = dict(
+        planning_id=new_meeting.id,
+        subject="sub",
+        activity="act",
+        user_story_id="1",
+        assigned="bob",
+    )
+    rv = client.post(
+        "/meetings/planning/" + str(new_meeting.id) + "/results/add", data=data
+    )
+
+
     rv = client.get("/meetings/planning/1", data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
 
-    print(response_json)
-    assert response_json[0]["sprint_id"] is 1
-    assert response_json[0]["id"] is new_meeting.id
+
+    pprint(response_json)
+    assert response_json['planning']['date'] == "Tue, 03 Mar 2020 00:00:00 GMT"
+    assert len(response_json) == 2
+    assert len(response_json['results']) == 2
     app.db.session.commit()
 
 
@@ -296,8 +325,8 @@ def client():
 def init_database():
     app.db.create_all()
 
-    user1 = User("bob3", "bob", "dylan", "emprendedor", "123")
-    user2 = User("bob4", "bob", "esponja", "cocinero", "123")
+    user1 = User("bob33", "BOB", "dylan", "emprendedor", "123")
+    user2 = User("bob44", "bob", "esponja", "cocinero", "123")
 
     app.db.session.add(user1)
     app.db.session.add(user2)

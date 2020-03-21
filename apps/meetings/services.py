@@ -32,7 +32,7 @@ def get_planning_by_sprint(sprint_id):
 def add_planning():
     if request.method == "POST":
         sprint_id = request.form.get("sprint_id")
-        date = datetime.fromisoformat(request.form.get("date"))
+        date = datetime.strptime(request.form.get("date"), "%a, %d %b %Y %H:%M:%S %Z")
 
         try:
             planning = Planning(sprint_id=sprint_id, date=date)
@@ -57,7 +57,7 @@ def update_planning(_id):
     if request.method == "PUT":
         planning = Planning.query.get_or_404(_id)
         sprint_id = request.form.get("sprint_id")
-        date = datetime.fromisoformat(request.form.get("date"))
+        date = datetime.strptime(request.form.get("date"), "%a, %d %b %Y %H:%M:%S %Z")
 
         planning.sprint_id = sprint_id
         planning.date = date
@@ -174,7 +174,7 @@ def get_retrospectives_by_sprint(sprint_id):
 def add_retrospective():
     if request.method == "POST":
         sprint_id = request.form.get("sprint_id")
-        date = datetime.fromisoformat(request.form.get("date"))
+        date = datetime.strptime(request.form.get("date"), "%a, %d %b %Y %H:%M:%S %Z")
         method = request.form.get("method")
         positive = request.form.get("positive")
         negative = request.form.get("negative")
@@ -213,7 +213,7 @@ def update_retrospective(_id):
     if request.method == "PUT":
         retrospective = Retrospective.query.get_or_404(_id)
         sprint_id = request.form.get("sprint_id")
-        date = datetime.fromisoformat(request.form.get("date"))
+        date = datetime.strptime(request.form.get("date"), "%a, %d %b %Y %H:%M:%S %Z")
         method = request.form.get("method")
         positive = request.form.get("positive")
         negative = request.form.get("negative")
@@ -274,7 +274,7 @@ def get_dailies_by_sprint(sprint_id):
 @app.route("/meetings/dailies/add", methods=["POST"])
 def add_daily():
     if request.method == "POST":
-        date = datetime.fromisoformat(request.form.get("date"))
+        date = datetime.strptime(request.form.get("date"), "%a, %d %b %Y %H:%M:%S %Z")
         report = request.form.get("report")
         sprint_id = request.form.get("sprint_id")
 
@@ -311,7 +311,7 @@ def search_daily(id_):
 def update_daily(id_):
     if request.method == "PUT":
         daily = Daily.query.get_or_404(id_)
-        date = datetime.fromisoformat(request.form.get("date"))
+        date = datetime.strptime(request.form.get("date"), "%a, %d %b %Y %H:%M:%S %Z")
         report = request.form.get("report")
         sprint_id = request.form.get("sprint_id")
 

@@ -21,13 +21,14 @@ class UserA(db.Model):
     last_name = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
-    projects = db.relationship("Project", backref="userA")
+    prrojects = db.relationship("Project", backref="userA")
     logger = db.relationship("Logger", backref="userA")
     sprint = db.relationship("Sprint", backref="userA")
     task_created = db.relationship("Task", backref="userA")
     tasks = relationship(
         "Task", secondary=assign, backref=db.backref("asignners", lazy="dynamic")
     )
+
 
     def __init__(self, username, first_name, last_name, role, password):
         self.username = username
@@ -36,6 +37,8 @@ class UserA(db.Model):
         self.role = role
         self.password = password
 
+        print(username, first_name, last_name, role, password)
+
     def __repr__(self):
         return "<id {}>".format(self.id)
 
@@ -43,7 +46,7 @@ class UserA(db.Model):
         return {
             "id": self.id,
             "username": self.username,
-            "firs_name": self.first_name,
+            "first_name": self.first_name,
             "last_name": self.last_name,
             "role": self.role,
         }

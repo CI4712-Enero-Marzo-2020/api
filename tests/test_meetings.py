@@ -13,7 +13,7 @@ def test_meetings_work():
 
 
 def test_meetings_add(client, init_database):
-    data = dict(sprint_id="1", date="2020-03-03")
+    data = dict(sprint_id="1", date="2020-03-03T12:30:59.000000")
     rv = client.post("/meetings/planning/add", data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
     new_meeting = Planning.query.get(response_json["id"])
@@ -23,7 +23,7 @@ def test_meetings_add(client, init_database):
 
 
 def test_meetings_get_plannings_by_sprint(client, init_database):
-    data = dict(sprint_id=1, date="2020-03-03")
+    data = dict(sprint_id=1, date="2020-03-03T12:30:59.000000")
     rv = client.post("/meetings/planning/add", data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
     new_meeting = Planning.query.get(response_json["id"])
@@ -37,12 +37,12 @@ def test_meetings_get_plannings_by_sprint(client, init_database):
 
 
 def test_meetings_update(client, init_database):
-    data = dict(sprint_id="1", date="2020-03-03")
+    data = dict(sprint_id="1", date="2020-03-03T12:30:59.000000")
     rv = client.post("/meetings/planning/add", data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
     new_meeting = Planning.query.get(response_json["id"])
 
-    data = dict(sprint_id="2", date="2020-03-03")
+    data = dict(sprint_id="2", date="2020-03-03T12:30:59.000000")
     rv = client.put("/meetings/planning/" + str(new_meeting.id), data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
     updated_meeting = Planning.query.get(response_json["id"])
@@ -52,7 +52,7 @@ def test_meetings_update(client, init_database):
 
 
 def test_meetings_add_result(client, init_database):
-    data = dict(sprint_id="1", date="2020-03-03")
+    data = dict(sprint_id="1", date="2020-03-03T12:30:59.000000")
     rv = client.post("/meetings/planning/add", data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
     new_meeting = Planning.query.get(response_json["id"])
@@ -75,7 +75,7 @@ def test_meetings_add_result(client, init_database):
 
 
 def test_meetings_update_result(client, init_database):
-    data = dict(sprint_id="1", date="2020-03-03")
+    data = dict(sprint_id="1", date="2020-03-03T12:30:59.000000")
     rv = client.post("/meetings/planning/add", data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
     new_meeting = Planning.query.get(response_json["id"])
@@ -112,7 +112,7 @@ def test_meetings_update_result(client, init_database):
 
 
 def test_meetings_delete_result(client, init_database):
-    data = dict(sprint_id="1", date="2020-03-03")
+    data = dict(sprint_id="1", date="2020-03-03T12:30:59.000000")
     rv = client.post("/meetings/planning/add", data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
     new_meeting = Planning.query.get(response_json["id"])
@@ -149,7 +149,7 @@ def test_meetings_delete_result(client, init_database):
 def test_meetings_add_retrospective(client, init_database):
     data = dict(
         sprint_id=1,
-        date="2020-03-03",
+        date="2020-03-03T12:30:59.000000",
         method="TDD",
         positive="Bueno",
         negative="Malo",
@@ -164,14 +164,14 @@ def test_meetings_add_retrospective(client, init_database):
 
 
 def test_meetings_update_retrospective(client, init_database):
-    data = dict(sprint_id="1", date="2020-03-03")
+    data = dict(sprint_id="1", date="2020-03-03T12:30:59.000000")
     rv = client.post("/meetings/planning/add", data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
     new_meeting = Planning.query.get(response_json["id"])
 
     data = dict(
         sprint_id=1,
-        date="2020-03-03",
+        date="2020-03-03T12:30:59.000000",
         method="TDD",
         positive="Bueno",
         negative="Malo",
@@ -183,7 +183,7 @@ def test_meetings_update_retrospective(client, init_database):
 
     data = dict(
         sprint_id=1,
-        date="2020-03-03",
+        date="2020-03-03T12:30:59.000000",
         method="TDD",
         positive="Mejor",
         negative="Malo",
@@ -202,7 +202,7 @@ def test_meetings_update_retrospective(client, init_database):
 def test_meetings_delete_retrospective(client, init_database):
     data = dict(
         sprint_id=1,
-        date="2020-03-03",
+        date="2020-03-03T12:30:59.000000",
         method="TDD",
         positive="Bueno",
         negative="Malo",
@@ -223,7 +223,7 @@ def test_meetings_delete_retrospective(client, init_database):
 
 
 def test_meetings_add_daily(client, init_database):
-    data = dict(date="2020-03-03", sprint_id=1, report="TDD",)
+    data = dict(date="2020-03-03T12:30:59.000000", sprint_id=1, report="TDD",)
     rv = client.post("/meetings/dailies/add", data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
     new_daily = Daily.query.get(response_json["id"])
@@ -233,12 +233,12 @@ def test_meetings_add_daily(client, init_database):
 
 
 def test_meetings_update_daily(client, init_database):
-    data = dict(date="2020-03-03", sprint_id=1, report="TDD",)
+    data = dict(date="2020-03-03T12:30:59.000000", sprint_id=1, report="TDD",)
     rv = client.post("/meetings/dailies/add", data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
     new_daily = Daily.query.get(response_json["id"])
 
-    data = dict(date="2020-03-03", sprint_id=1, report="DDT",)
+    data = dict(date="2020-03-03T12:30:59.000000", sprint_id=1, report="DDT",)
 
     rv = client.put("/meetings/dailies/" + str(new_daily.id), data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
@@ -251,7 +251,7 @@ def test_meetings_update_daily(client, init_database):
 
 
 def test_meetings_delete_daily(client, init_database):
-    data = dict(date="2020-03-03", sprint_id=1, report="TDD",)
+    data = dict(date="2020-03-03T12:30:59.000000", sprint_id=1, report="TDD",)
     rv = client.post("/meetings/dailies/add", data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
     new_daily = Daily.query.get(response_json["id"])
@@ -265,7 +265,7 @@ def test_meetings_delete_daily(client, init_database):
 
 
 def test_meetings_search_daily(client, init_database):
-    data = dict(date="2020-03-03", sprint_id=1, report="TDD",)
+    data = dict(date="2020-03-03T12:30:59.000000", sprint_id=1, report="TDD",)
     rv = client.post("/meetings/dailies/add", data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
     new_daily = Daily.query.get(response_json["id"])

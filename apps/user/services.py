@@ -31,11 +31,14 @@ def register():
             role = request.args.get("role")
             password = request.args.get("password")
             request_link = True
+            print(1)
         except Exception as e:
             return jsonify({"msg": "Missing JSON in request"}), 400
 
     if request_link:
         try:
+            print(2)
+            print(username,first_name)
             user = UserA(
                 username=username,
                 first_name=first_name,
@@ -43,6 +46,7 @@ def register():
                 role=role,
                 password=password,
             )
+            print(3,user)
             db.session.add(user)
             db.session.commit()
 
@@ -52,6 +56,7 @@ def register():
 
             return jsonify(user.serialize()), 200
         except Exception as e:
+            print(e)
             return str(e)
     else:
 

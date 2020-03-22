@@ -1,4 +1,5 @@
 import sys, os, tempfile, pytest, json
+import http.client
 import app
 from mixer.backend.flask import mixer
 from datetime import datetime
@@ -199,6 +200,190 @@ def test_get_tests_by_story(client, init_database):
     app.db.session.commit()
 
 
+def test_add_sprint(client, init_database):
+
+    data = dict(
+            user_id = 1,
+            description = 'Test description',
+            project_id = 1,
+            closed = False,
+            end_date = '01/01/2020'
+        )
+    url = '/sprint/add'
+
+    response = client.post(url, json=data)
+    
+    response_json = json.loads(response.data.decode('utf-8'))
+    new_sprint = Sprint.query.get(response_json['id'])
+    
+    assert new_sprint.description == 'Test description'
+    assert new_sprint.project_id == 1
+    app.db.session.commit()
+
+
+def test_add_criteria(client, init_database):
+
+    story0 = add_temp_story('test_description', 1, StoryPriority.high,False)
+
+    data = dict(
+            story_id = story0[0],
+            description='Test description',
+            user_id = 1,
+        )
+    url = '/criteria/add'
+
+    response = client.post(url, json=data)
+    
+    response_json = json.loads(response.data.decode('utf-8'))
+    new_criteria = AcceptanceCriteria.query.get(response_json['id'])
+    
+    assert new_criteria.description == 'Test description'
+    assert new_criteria.story_id == story0[0]
+    app.db.session.commit()
+
+
+def test_delete_criteria(client, init_database):
+    # creando story y criterias temporales asociadas
+    story0 = add_temp_story('test_description', 1, StoryPriority.high,False)
+
+    a_creiteria0 = add_temp_acceptcriteria(1,'Test description1',story0[0],False)
+    
+    # se llama al servicio
+    rv = client.post("/criteria/delete/"+str(a_creiteria0[0]))
+
+    # se deserializa el response
+    response_json = json.loads(rv.data.decode('utf-8'))
+
+    # se trata de hacer un get por ese id
+    deleted_criteria = AcceptanceCriteria.query.get(a_creiteria0[0])
+
+    # se comprueba que el log no existe
+    assert deleted_criteria is None
+    app.db.session.commit()
+
+
+def test_add_accepttests(client, init_database):
+
+    story0 = add_temp_story('test_description', 1, StoryPriority.high,False)
+
+    data = dict(
+            story_id = story0[0],
+            description='Test description',
+            user_id = 2,
+        )
+    url = '/tests/add'
+
+    response = client.post(url, json=data)
+    
+    response_json = json.loads(response.data.decode('utf-8'))
+    new_test = AcceptanceTest.query.get(response_json['id'])
+    
+    assert new_test.description == 'Test description'
+    assert new_test.story_id == story0[0]
+    app.db.session.commit()
+
+
+def test_delete_accepttests(client, init_database):
+    # creando story y criterias temporales asociadas
+    story0 = add_temp_story('test_description', 1, StoryPriority.high,False)
+
+    test0 = add_temp_accepttests(1,'Test description1',story0[0],False)
+    
+    # se llama al servicio
+    rv = client.post("/tests/delete/"+str(test0[0]))
+
+    # se deserializa el response
+    response_json = json.loads(rv.data.decode('utf-8'))
+
+    # se trata de hacer un get por ese id
+    deleted_test = AcceptanceTest.query.get(test0[0])
+
+    # se comprueba que el log no existe
+    assert deleted_test is None
+    app.db.session.commit()
+
+
+def add_story_to_sprint(client, init_database):
+    # creando sprint temporal
+    sprint0 = add_temp_sprint(1, 'test description', 1, False, '01/01/2020')
+    story0 = add_temp_story('test_description', 1, StoryPriority.high,False)
+
+    # se llama al servicio
+    rv = client.post("/sprint/addstory/"+str(sprint0[0])+'/'+str(story0[0]))
+
+    # se deserializa el response
+    response_json = json.loads(rv.data.decode('utf-8'))
+
+    story = Story.query.get(sprint_id=sprint0[0], id=story0[0])
+    
+    assert deleted_test is None
+    app.db.session.commit()
+
+
+def test_update_sprint(client, init_database):
+
+    sprint0 = add_temp_sprint(1, 'test description', 1, False, '01/01/2020')
+
+    data = dict(
+            user_id = 1,
+            description = 'Test correction',
+            project_id = 1,
+            closed = False,
+            end_date = '01/01/2020'
+        )
+    url = '/sprint/update/'+str(sprint0[0])
+
+    response = client.put(url, json=data)
+    
+    response_json = json.loads(response.data.decode('utf-8'))
+    new_sprint = Sprint.query.get(response_json['id'])
+    
+    assert new_sprint.description == 'Test correction'
+    app.db.session.commit()
+
+
+def test_update_criteria(client, init_database):
+
+    # creando story y criterias temporales asociadas
+    story0 = add_temp_story('test_description', 1, StoryPriority.high,False)
+    a_creiteria0 = add_temp_acceptcriteria(1,'Test description1',story0[0],False)
+
+    data = dict(
+            story_id = story0[0],
+            description='Test correction',
+            user_id = 1,
+        )
+    url = '/criteria/update/'+str(a_creiteria0[0])
+
+    response = client.put(url, json=data)
+    
+    response_json = json.loads(response.data.decode('utf-8'))
+    new_criteria = AcceptanceCriteria.query.get(response_json['id'])
+    
+    assert new_criteria.description == 'Test correction'
+    app.db.session.commit()
+
+
+def test_update_test(client, init_database):
+
+    # creando story y criterias temporales asociadas
+    story0 = add_temp_story('test_description', 1, StoryPriority.high,False)
+    a_test0 = add_temp_accepttests(1,'Test description1',story0[0],False)
+
+    data = dict(
+            story_id = story0[0],
+            description='Test correction',
+            user_id = 1,
+        )
+    url = '/test/update/'+str(a_test0[0])
+
+    response = client.put(url, json=data)
+    
+    response_json = json.loads(response.data.decode('utf-8'))
+    new_test = AcceptanceTest.query.get(response_json['id'])
+    
+    assert new_test.description == 'Test correction'
+    app.db.session.commit()
 
 
 
@@ -224,8 +409,8 @@ def client():
 def init_database():
     app.db.create_all()
 
-    user1 = User('bob3','bob','dylan','emprendedor','123')
-    user2 = User('bob4','bob','esponja','cocinero','123')
+    user1 = User('bob3','bob','dylan','Scrum Team','123')
+    user2 = User('bob4','bob','esponja','Product Owner','123')
 
     project1 = Project('description1',1, ProjectStatus.active)
     project2 = Project('description2',1, ProjectStatus.active)

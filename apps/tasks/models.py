@@ -56,13 +56,14 @@ class Task(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('userA.id'))
 
 
-    def __init__(self, description,sprint_id,task_type,task_status,task_class,user_id):
+    def __init__(self, description,sprint_id,task_type,task_status,task_class,user_id, users = None):
         self.description =description
         self.sprint_id = sprint_id
         self.task_type = task_type
         self.task_status = task_status
         self.task_class = task_class
         self.user_id = user_id
+        self.users = users
 
     def __repr__(self):
         return '<id {}>'.format(self.id)

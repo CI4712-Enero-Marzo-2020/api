@@ -3,3 +3,4 @@ __pycache__
 database/*
 !database/__init__.py
 migrations/*
+migrations/versions/*

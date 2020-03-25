@@ -38,7 +38,7 @@ def register():
     if request_link:
         try:
             print(2)
-            print(username,first_name)
+            print(username, first_name)
             user = UserA(
                 username=username,
                 first_name=first_name,
@@ -46,7 +46,7 @@ def register():
                 role=role,
                 password=password,
             )
-            print(3,user)
+            print(3, user)
             db.session.add(user)
             db.session.commit()
 

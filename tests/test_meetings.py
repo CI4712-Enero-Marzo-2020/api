@@ -42,7 +42,6 @@ def test_meetings_get_plannings_by_sprint(client, init_database):
     data = dict(sprint_id="1", date="Tue, 03 Mar 2020 00:00:00 GMT")
     rv = client.post("/meetings/planning/add", data=data)
 
-
     data = dict(
         planning_id=new_meeting.id,
         subject="sub",
@@ -54,15 +53,13 @@ def test_meetings_get_plannings_by_sprint(client, init_database):
         "/meetings/planning/" + str(new_meeting.id) + "/results/add", data=data
     )
 
-
     rv = client.get("/meetings/planning/1", data=data)
     response_json = json.loads(rv.data.decode("utf-8"))
 
-
     pprint(response_json)
-    assert response_json['planning']['date'] == "Tue, 03 Mar 2020 00:00:00 GMT"
+    assert response_json["planning"]["date"] == "Tue, 03 Mar 2020 00:00:00 GMT"
     assert len(response_json) == 2
-    assert len(response_json['results']) == 2
+    assert len(response_json["results"]) == 2
     app.db.session.commit()
 
 

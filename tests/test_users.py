@@ -7,22 +7,22 @@ from apps.meetings.models import *
 from apps.user.models import UserA as User
 
 
-
 def test_meetings_work():
     assert True
 
 
 def test_users_register(client, init_database):
-    rv = client.post('/user/register?username=debiaslumen&first_name=Pedro&last_name=Perez&role=Scrum%20Team&password=1234')
+    rv = client.post(
+        "/user/register?username=debiaslumen&first_name=Pedro&last_name=Perez&role=Scrum%20Team&password=1234"
+    )
     print(rv.data)
     response_json = json.loads(rv.data.decode("utf-8"))
-    
+
     assert response_json["username"] == "debiaslumen"
     assert response_json["first_name"] == "Pedro"
     assert response_json["last_name"] == "Perez"
     assert response_json["role"] == "Scrum Team"
     app.db.session.commit()
-
 
 
 @pytest.fixture

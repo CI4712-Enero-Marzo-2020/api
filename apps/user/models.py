@@ -21,14 +21,14 @@ class UserA(db.Model):
     last_name = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
-    prrojects = db.relationship("Project", backref="userA")
+    projects = db.relationship("Project", backref="userA")
     logger = db.relationship("Logger", backref="userA")
     sprint = db.relationship("Sprint", backref="userA")
     task_created = db.relationship("Task", backref="userA")
     tasks = relationship(
         "Task", secondary=assign, backref=db.backref("asignners", lazy="dynamic")
     )
-
+    teams = db.relationship("Team", secondary="users")
 
     def __init__(self, username, first_name, last_name, role, password):
         self.username = username

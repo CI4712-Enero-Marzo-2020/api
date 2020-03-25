@@ -94,22 +94,25 @@ def add_sprint():
     if request.method == "POST":
         description = request.json.get("description")
         project_id = request.json.get("project_id")
+        end_date = request.json.get("end_date")
         user_id = request.json.get("user_id")
-
+        sp_date = end_date.split("/")
+        date = int(sp_date[0])
+        mount = int(sp_date[1])
+        year = int(sp_date[2])
         try:
             sprint = Sprint(
-                project_id=project_id,
-                description=description,
                 user_id=user_id,
+                description=description,
+                project_id=project_id,
                 closed=False,
+                end_date=datetime(year, mount, date),
             )
             db.session.add(sprint)
             db.session.commit()
-
             ###########Agregando evento al logger#######################
             add_event_logger(user_id, LoggerEvents.add_sprint, MODULE)
             ############################################################
-            print(sprint)
             return jsonify(sprint.serialize()), 200
         except Exception as e:
             print(e)

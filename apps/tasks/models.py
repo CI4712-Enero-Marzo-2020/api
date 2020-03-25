@@ -2,9 +2,10 @@ import os, enum
 from datetime import datetime
 from app import db
 from apps.stories.models import *
-from apps.user.models import *
+from apps.user.models import assign, UserA
 from apps.sprints.models import *
 from sqlalchemy.orm import relationship
+import json
 
 
 class TaskType(enum.Enum):
@@ -33,43 +34,35 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text)
     # relacion one task - one story OBLIGATORIO
-    story_id = db.Column(db.Integer, db.ForeignKey("stories.id"), nullable=False)
+    # story_id = db.Column(db.Integer, db.ForeignKey('stories.id'), nullable=False)
     # relacion one task - one sprint OBLIGATORIO
     sprint_id = db.Column(db.Integer, db.ForeignKey("sprints.id"), nullable=False)
     task_type = db.Column(db.Enum(TaskType), default=TaskType.develop, nullable=False)
     task_status = db.Column(db.Enum(TaskStatus), default=TaskStatus.new, nullable=False)
     task_class = db.Column(db.Enum(TaskClass), default=TaskClass.easy, nullable=False)
-    init_date = db.Column(db.DateTime, default=datetime.utcnow)
-    end_date = db.Column(db.DateTime)
-    duration = db.Column(db.Integer)
-    est_time = db.Column(db.Integer)
+    # init_date = db.Column(db.DateTime, default=datetime.utcnow)
+    # end_date = db.Column(db.DateTime)
+    # duration = db.Column(db.Integer)
+    # est_time = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey("userA.id"))
 
     def __init__(
         self,
         description,
-        story_id,
         sprint_id,
         task_type,
         task_status,
         task_class,
-        init_date,
-        end_date,
-        est_time,
         user_id,
-        duration,
+        users=None,
     ):
         self.description = description
-        self.story_id = story_id
         self.sprint_id = sprint_id
         self.task_type = task_type
         self.task_status = task_status
         self.task_class = task_class
-        self.init_date = init_date
-        self.end_date = end_date
-        self.est_time = est_time
         self.user_id = user_id
-        self.duration = duration
+        self.users = users
 
     def __repr__(self):
         return "<id {}>".format(self.id)
@@ -77,22 +70,23 @@ class Task(db.Model):
     def serialize(self):
         users = []
         try:
-            assign = assign.query.filter(task_id=self.id)
-            for i in assign:
-                users.append(i.user_id)
-        except:
+            # assignees = db.query(assign).filter(task_id == self.id)
+            resultado = db.engine.execute(
+                "select * from assign where task_id =" + str(self.id) + ";"
+            )
+            for row in resultado:
+                user = UserA.query.get_or_404(row.user_id)
+                users.append({"id": user.id, "username": user.username})
+        except ValueError:
             pass
 
         return {
+            "id": self.id,
             "description": self.description,
-            "story_id": self.story_id,
             "sprint_id": self.sprint_id,
-            "task_type": self.task_type,
-            "task_status": self.task_status,
-            "task_class": self.task_class,
-            "init_date": self.init_date,
-            "end_date": self.end_date,
-            "est_time": self.est_time,
+            "task_type": self.task_type.value,
+            "task_status": self.task_status.value,
+            "task_class": self.task_class.value,
             "user_id": self.user_id,
             "users": users,
         }

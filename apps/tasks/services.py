@@ -11,16 +11,16 @@ from apps.logger.models import LoggerEvents
 MODULE = "Tarea"
 
 
-@app.route("/task/getbystory/<story_id>")
-def get_tasks(story_id):
-    tasks = Task.query.filter_by(story_id=story_id)
+@app.route("/tasks/getbysprint/<sprint_id>")
+def get_tasks(sprint_id):
+    tasks = Task.query.filter_by(sprint_id=sprint_id)
     if tasks.count() > 0:
         return jsonify([c.serialize() for c in tasks])
     else:
         return jsonify({"server": "NO_CONTENT"})
 
 
-@app.route("/task/delete/<task_id>", methods=["POST"])
+@app.route("/tasks/delete/<task_id>", methods=["POST"])
 def delete_task(task_id):
     try:
         task = Task.query.filter_by(id=task_id).delete()
@@ -32,20 +32,13 @@ def delete_task(task_id):
 
 @app.route("/tasks/add", methods=["POST"])
 def add_tasks():
+
     if request.method == "POST":
         description = request.json.get("description")
-        story_id = request.json.get("story_id")
         sprint_id = request.json.get("sprint_id")
         task_type = request.json.get("task_type")
         task_status = request.json.get("task_status")
         task_class = request.json.get("task_class")
-        if request.json.get("init_date"):
-            init_date = datetime.strptime(
-                request.json.get("init_date"), "%m/%d/%y %H:%M:%S"
-            )
-        end_date = datetime.strptime(request.json.get("end_date"), "%m/%d/%y %H:%M:%S")
-        duration = int(str(end_date - init_date)[:2])
-        est_time = request.json.get("est_time")
 
         # usuario que crea la tarea
         user_id = request.json.get("user_id")
@@ -67,15 +60,10 @@ def add_tasks():
         try:
             task = Task(
                 description=description,
-                story_id=story_id,
                 sprint_id=sprint_id,
                 task_type=task_type,
                 task_status=task_status,
                 task_class=task_class,
-                init_date=init_date,
-                end_date=end_date,
-                duration=duration,
-                est_time=est_time,
                 user_id=user_creator.id,
             )
             db.session.add(task)

@@ -36,17 +36,18 @@ class Story(db.Model):
     tests = db.relationship(
         "AcceptanceTest", backref="stories", lazy=True, post_update=True
     )
-    tasks = db.relationship("Task", backref="stories", lazy=True, post_update=True)
+    # tasks = db.relationship('Task', backref='stories', lazy=True, post_update=True)
 
     parent_id = db.Column(db.Integer, db.ForeignKey("stories.id"))
     children = db.relationship("Story", lazy="joined")
 
-    def __init__(self, project_id, description, priority, epic):
+    def __init__(self, project_id, description, priority, epic, sprint_id=None):
         self.description = description
         self.project_id = project_id
         self.priority = priority
         self.epic = epic
         self.done = False
+        self.sprint_id = sprint_id
 
     def __repr__(self):
         return "<id {}>".format(self.id)

@@ -18,6 +18,48 @@ def get_tasks(sprint_id):
     else: 
          return jsonify({'server': 'NO_CONTENT'})
 
+@app.route("/tasks/update/<task_id>",methods=['PUT'])
+def update_task(task_id):
+    if request.method == 'PUT':
+        task = Task.query.get_or_404(task_id)
+
+        if request.json.get('description'):
+            description=request.json.get('description')
+            task.description=description
+
+        if request.json.get('task_type'):
+            task_type=request.json.get('task_type')
+            task.task_type=task_type
+
+        if request.json.get('task_class'):
+            task_class=request.json.get('task_class')
+            task.task_class=task_class
+
+        if request.json.get('task_status'):
+            task_status=request.json.get('task_status')
+            task.task_status=task_status
+
+        if request.json.get('task_functions'):
+            task_functions=request.json.get('task_functions')
+            task.task_functions=task_functions
+
+        if request.json.get('task_functions'):
+            task_functions=request.json.get('task_functions')
+            task.task_functions=task_functions
+
+
+        try:
+            db.session.commit()
+
+            ###########Agregando evento al logger##########################
+            add_event_logger(sprint.user_id, LoggerEvents.update_sprint, MODULE)
+            ###############################################################
+
+            return jsonify(sprint.serialize())
+        except:
+            return jsonify({'server': 'ERROR'})
+
+
 @app.route("/tasks/delete/<task_id>",methods=['POST'])
 def delete_task(task_id):
     try:

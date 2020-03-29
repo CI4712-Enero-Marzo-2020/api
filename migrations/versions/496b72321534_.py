@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 71d283fc661d
+Revision ID: 496b72321534
 Revises: 
-Create Date: 2020-03-18 02:22:53.151600
+Create Date: 2020-03-28 19:09:35.845547
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '71d283fc661d'
+revision = '496b72321534'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,6 +25,20 @@ def upgrade():
     sa.Column('published', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('documentation',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.Text(), nullable=False),
+    sa.Column('dev_met', sa.Text(), nullable=False),
+    sa.Column('version', sa.Float(), nullable=False),
+    sa.Column('metaphor', sa.Text(), nullable=True),
+    sa.Column('project_id', sa.Integer(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('team',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=255), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('userA',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=100), nullable=False),
@@ -35,6 +49,41 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('username')
     )
+    op.create_table('arq',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('doc_id', sa.Integer(), nullable=False),
+    sa.Column('path', sa.Text(), nullable=False),
+    sa.ForeignKeyConstraint(['doc_id'], ['documentation.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('copyR',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('doc_id', sa.Integer(), nullable=False),
+    sa.Column('content', sa.Text(), nullable=False),
+    sa.ForeignKeyConstraint(['doc_id'], ['documentation.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('diag',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('doc_id', sa.Integer(), nullable=False),
+    sa.Column('path', sa.Text(), nullable=False),
+    sa.ForeignKeyConstraint(['doc_id'], ['documentation.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('foundation',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('doc_id', sa.Integer(), nullable=False),
+    sa.Column('content', sa.Text(), nullable=False),
+    sa.ForeignKeyConstraint(['doc_id'], ['documentation.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('intro',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('doc_id', sa.Integer(), nullable=False),
+    sa.Column('content', sa.Text(), nullable=False),
+    sa.ForeignKeyConstraint(['doc_id'], ['documentation.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('logger',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user', sa.Integer(), nullable=True),
@@ -44,6 +93,13 @@ def upgrade():
     sa.ForeignKeyConstraint(['user'], ['userA.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('motivation',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('doc_id', sa.Integer(), nullable=False),
+    sa.Column('content', sa.Text(), nullable=False),
+    sa.ForeignKeyConstraint(['doc_id'], ['documentation.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('projects',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
@@ -51,6 +107,50 @@ def upgrade():
     sa.Column('status', sa.Enum('completed', 'paused', 'active', name='projectstatus'), nullable=False),
     sa.Column('date_created', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['userA.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('purpose',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('doc_id', sa.Integer(), nullable=False),
+    sa.Column('content', sa.Text(), nullable=False),
+    sa.ForeignKeyConstraint(['doc_id'], ['documentation.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('scope',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('doc_id', sa.Integer(), nullable=False),
+    sa.Column('content', sa.Text(), nullable=False),
+    sa.ForeignKeyConstraint(['doc_id'], ['documentation.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('status',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('doc_id', sa.Integer(), nullable=False),
+    sa.Column('content', sa.Text(), nullable=False),
+    sa.ForeignKeyConstraint(['doc_id'], ['documentation.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('teams',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('doc_id', sa.Integer(), nullable=True),
+    sa.Column('team_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['doc_id'], ['documentation.id'], ),
+    sa.ForeignKeyConstraint(['team_id'], ['team.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('users',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('team_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['team_id'], ['team.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['userA.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('values',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('doc_id', sa.Integer(), nullable=False),
+    sa.Column('content', sa.Text(), nullable=False),
+    sa.ForeignKeyConstraint(['doc_id'], ['documentation.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('sprints',
@@ -134,8 +234,22 @@ def downgrade():
     op.drop_table('tasks')
     op.drop_table('stories')
     op.drop_table('sprints')
+    op.drop_table('values')
+    op.drop_table('users')
+    op.drop_table('teams')
+    op.drop_table('status')
+    op.drop_table('scope')
+    op.drop_table('purpose')
     op.drop_table('projects')
+    op.drop_table('motivation')
     op.drop_table('logger')
+    op.drop_table('intro')
+    op.drop_table('foundation')
+    op.drop_table('diag')
+    op.drop_table('copyR')
+    op.drop_table('arq')
     op.drop_table('userA')
+    op.drop_table('team')
+    op.drop_table('documentation')
     op.drop_table('books')
     # ### end Alembic commands ###

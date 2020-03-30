@@ -20,6 +20,7 @@ class UnitTest(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text)
+    module = db.Column(db.Text)
     sprint_id = db.Column(db.Integer, db.ForeignKey("sprints.id"))
     component = db.Column(
         db.Enum(Component), default=Component.vista, nullable=False
@@ -27,11 +28,12 @@ class UnitTest(db.Model):
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     amount = db.Column(db.Integer)
 
-    def __init__(self, sprint_id, description, component, amount):
+    def __init__(self, sprint_id, description, component, amount, module):
         self.sprint_id = sprint_id
         self.description = description
         self.component = component
         self.amount = amount
+        self.module = module
 
     def __repr__(self):
         return "<id {}>".format(self.id)
@@ -41,7 +43,8 @@ class UnitTest(db.Model):
             "id": self.id,
             "sprint_id": self.sprint_id,
             "description": self.description,
-            "component": self.priority.value,
+            "module": self.module,
+            "component": self.component.value,
             "date_created": self.date_created,
             "amount": self.amount,
         }

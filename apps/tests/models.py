@@ -9,6 +9,7 @@ from apps.sprints.models import *
 # IU: Fecha, Funcionalidad
 # CRUD, Get by Periodo. Get By Sprint. Get Sprint from
 
+
 class Component(enum.Enum):
     vista = "vista"
     modelo = "modelo"
@@ -22,9 +23,7 @@ class UnitTest(db.Model):
     description = db.Column(db.Text)
     module = db.Column(db.Text)
     sprint_id = db.Column(db.Integer, db.ForeignKey("sprints.id"))
-    component = db.Column(
-        db.Enum(Component), default=Component.vista, nullable=False
-    )
+    component = db.Column(db.Enum(Component), default=Component.vista, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     amount = db.Column(db.Integer)
 
@@ -48,6 +47,7 @@ class UnitTest(db.Model):
             "date_created": self.date_created,
             "amount": self.amount,
         }
+
 
 class UITest(db.Model):
     __tablename__ = "uitests"

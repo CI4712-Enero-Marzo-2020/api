@@ -18,6 +18,7 @@ from apps.user.services import *
 from apps.stories.services import *
 from apps.sprints.services import *
 from apps.tasks.services import *
+from apps.tests.services import *
 from apps.logger.services import *
 from apps.meetings.services import *
 from apps.docs.services import *

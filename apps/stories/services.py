@@ -25,6 +25,7 @@ def add_story():
         description=request.form.get('description')
         project_id=request.form.get('project_id')
         priority=request.form.get('priority')
+        estimation = request.form.get('estimation')
         epic_string=request.form.get('epic')
         if epic_string == "true":
             epic = True
@@ -36,6 +37,7 @@ def add_story():
                 description=description,
                 priority = priority,
                 epic = epic,
+                estimation = estimation
             )
             db.session.add(story)
             db.session.commit()

@@ -49,20 +49,25 @@ class Task(db.Model):
         default= TaskClass.easy,
         nullable=False
     )
-    # init_date = db.Column(db.DateTime, default=datetime.utcnow)
-    # end_date = db.Column(db.DateTime)
-    # duration = db.Column(db.Integer)
-    # est_time = db.Column(db.Integer)
+    worstCase = db.Column(db.Integer)
+    mostLikely = db.Column(db.Integer)
+    bestCase = db.Column(db.Integer)
+    est_time = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('userA.id'))
 
 
-    def __init__(self, description,sprint_id,task_type,task_status,task_class,user_id):
+    def __init__(self, description,sprint_id,task_type,task_status,task_class,user_id, worstCase, mostLikely, bestCase, est_time, users = None):
         self.description =description
         self.sprint_id = sprint_id
         self.task_type = task_type
         self.task_status = task_status
         self.task_class = task_class
         self.user_id = user_id
+        self.worstCase = worstCase
+        self.mostLikely = mostLikely
+        self.bestCase = bestCase
+        self.est_time = est_time
+        self.users = users
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -86,5 +91,9 @@ class Task(db.Model):
             'task_status': self.task_status.value,
             'task_class' : self.task_class.value,
             'user_id' : self.user_id,
+            'worstCase': self.worstCase,
+            'mostLikely':  self.mostLikely,
+            'bestCase': self.bestCase,
+            'est_time': self.est_time,
             'users': users
         }

@@ -77,7 +77,10 @@ def add_tasks():
         task_type = request.json.get('task_type')
         task_status = request.json.get('task_status')
         task_class = request.json.get('task_class')
-
+        worstCase =  request.json.get('worstCase')
+        mostLikely = request.json.get('mostLikely')
+        bestCase = request.json.get('bestCase')
+        est_time = request.json.get('est_time')
         #usuario que crea la tarea
         user_id = request.json.get('user_id')
         user_creator = UserA.query.get_or_404(user_id)
@@ -102,7 +105,11 @@ def add_tasks():
                         task_type= task_type,
                         task_status= task_status,
                         task_class= task_class,
-                        user_id = user_creator.id
+                        user_id = user_creator.id,
+                        worstCase = worstCase,
+                        mostLikely = mostLikely,
+                        bestCase = bestCase,
+                        est_time= est_time
             )
             db.session.add(task)
             db.session.commit()

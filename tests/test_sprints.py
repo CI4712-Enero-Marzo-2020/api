@@ -83,6 +83,39 @@ def add_temp_accepttests(user_id, description, story_id, approved):
         return(str(e)) 
 
 
+def add_temp_burnup(sprint_id, dia, realizados, necesarios, estimados):
+    try:
+        burnup = BurnUp(
+            sprint_id = sprint_id,
+            dia = dia,
+            realizados = realizados,
+            necesarios = necesarios,
+            estimados= estimados
+        )
+        db.session.add(burnup)
+        db.session.commit()
+        return [burnup.id, sprint_id]
+
+    except Exception as e:
+        return(str(e)) 
+
+
+def add_temp_burndown(sprint_id, dia, trabajo, disponible):
+    try:
+        burndown = BurnDown(
+            sprint_id = sprint_id,
+            dia = dia,
+            trabajo = trabajo,
+            disponible = disponible
+        )
+        db.session.add(burndown)
+        db.session.commit()
+        return [burndown.id, sprint_id]
+
+    except Exception as e:
+        return(str(e)) 
+
+
 def test_sprints_work():
     assert(True)
 
@@ -103,7 +136,6 @@ def test_get_sprints_by_project(client, init_database):
 
     # se verifica numero de elementos y si los temporales estan entre ellos
     assert (sprint0[0] in [elem['id'] for elem in sprint]) and (sprint1[0] in [elem['id'] for elem in sprint])
-    assert len(sprint) == 2
     app.db.session.commit()
 
 
@@ -388,9 +420,163 @@ def test_update_test(client, init_database):
 
 
 
+def test_get_burnup_by_sprint(client, init_database):
+    # creando sprint e historias temporales asociadas
+    sprint0 = add_temp_sprint(1, 'test description', 1, False, '01/01/2020')
+    
+    burn0 = add_temp_burnup(1,1,2,4,5)
+    burn1 = add_temp_burnup(1,2,3,4,5)
+
+    # se llama al servicio
+    rv = client.get("/burnup/getbysprint/"+str(sprint0[0]))
+
+    # se deserializa el response
+    sprint_burnsups = json.loads(rv.data.decode('utf-8'))
+
+    # se verifica numero de elementos y si los temporales estan entre ellos
+    assert (burn0[0] in [elem['id'] for elem in sprint_burnsups]) and (burn1[0] in [elem['id'] for elem in sprint_burnsups])
+    assert len(sprint_burnsups) == 2
+    app.db.session.commit()
 
 
+def test_get_burndown_by_sprint(client, init_database):
+    # creando sprint e historias temporales asociadas
+    sprint0 = add_temp_sprint(1, 'test description', 1, False, '01/01/2020')
+    
+    burn0 = add_temp_burndown(1,1,2,3)
+    burn1 = add_temp_burndown(1,1,3,4)
 
+    # se llama al servicio
+    rv = client.get("/burndown/getbysprint/"+str(sprint0[0]))
+
+    # se deserializa el response
+    sprint_burndown = json.loads(rv.data.decode('utf-8'))
+
+    # se verifica numero de elementos y si los temporales estan entre ellos
+    assert (burn0[0] in [elem['id'] for elem in sprint_burndown]) and (burn1[0] in [elem['id'] for elem in sprint_burndown])
+    assert len(sprint_burndown) == 2
+    app.db.session.commit()
+
+
+def test_add_burnup(client, init_database):
+
+    sprint0 = add_temp_sprint(1, 'test description', 1, False, '01/01/2020')
+
+    data = dict(
+            sprint_id = sprint0[0],
+            dia=1,
+            realizados = 2,
+            necesarios = 4,
+            estimados = 5,
+        )
+    url = '/burnup/add'
+
+    response = client.post(url, json=data)
+    
+    response_json = json.loads(response.data.decode('utf-8'))
+    new_test = BurnUp.query.get(response_json['id'])
+    
+    assert new_test.dia == 1
+    assert new_test.sprint_id == sprint0[0]
+    app.db.session.commit()
+
+
+def test_add_burndown(client, init_database):
+
+    sprint0 = add_temp_sprint(1, 'test description', 1, False, '01/01/2020')
+
+    data = dict(
+            sprint_id = sprint0[0],
+            dia=1,
+            trabajo = 2,
+            disponible = 4,
+        )
+    url = '/burndown/add'
+
+    response = client.post(url, json=data)
+    
+    response_json = json.loads(response.data.decode('utf-8'))
+    new_test = BurnDown.query.get(response_json['id'])
+    
+    assert new_test.dia == 1
+    assert new_test.sprint_id == sprint0[0]
+    app.db.session.commit()
+
+
+def test_update_burnup(client, init_database):
+
+    sprint0 = add_temp_sprint(1, 'test description', 1, False, '01/01/2020')
+    
+    burn0 = add_temp_burnup(1,1,2,4,5)
+
+    data = dict(
+            sprint_id = sprint0[0],
+            dia=1,
+            realizados = 2,
+            necesarios = 4,
+            estimados = 6,
+        )
+    url = '/burnup/update/'+str(burn0[0])
+
+    response = client.put(url, json=data)
+    
+    response_json = json.loads(response.data.decode('utf-8'))
+    new_sprint = BurnUp.query.get(response_json['id'])
+    
+    assert new_sprint.estimados == 6
+    app.db.session.commit()
+
+def test_update_burndown(client, init_database):
+
+    sprint0 = add_temp_sprint(1, 'test description', 1, False, '01/01/2020')
+    
+    burn0 = add_temp_burndown(1,1,2,4)
+
+    data = dict(
+            sprint_id = sprint0[0],
+            dia=1,
+            trabajo = 2,
+            disponible = 5,
+        )
+    url = '/burndown/update/'+str(burn0[0])
+
+    response = client.put(url, json=data)
+    
+    response_json = json.loads(response.data.decode('utf-8'))
+    new_sprint = BurnDown.query.get(response_json['id'])
+    
+    assert new_sprint.disponible == 5
+    app.db.session.commit()
+
+
+def test_delete_burnup(client, init_database):
+    sprint0 = add_temp_sprint(1, 'test description', 1, False, '01/01/2020')
+    
+    burn0 = add_temp_burnup(1,1,2,4,5)
+    
+    rv = client.post("/burnup/delete/"+str(burn0[0]))
+
+    response_json = json.loads(rv.data.decode('utf-8'))
+
+    deleted_test = BurnUp.query.get(burn0[0])
+
+    assert deleted_test is None
+    app.db.session.commit()
+
+
+def test_delete_burdown(client, init_database):
+    sprint0 = add_temp_sprint(1, 'test description', 1, False, '01/01/2020')
+    
+    burn0 = add_temp_burndown(1,1,2,4)
+    
+    rv = client.post("/burndown/delete/"+str(burn0[0]))
+
+    response_json = json.loads(rv.data.decode('utf-8'))
+
+    deleted_test = BurnDown.query.get(burn0[0])
+
+    assert deleted_test is None
+    app.db.session.commit()
 
 
 @pytest.fixture

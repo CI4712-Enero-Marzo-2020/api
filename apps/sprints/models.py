@@ -15,6 +15,8 @@ class Sprint(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
     #relacion many stories - one sprint
     stories = db.relationship('Story', backref='sprints', lazy=True, post_update=True)
+    burn_up = db.relationship('BurnUp', backref='sprints', lazy=True, post_update=True)
+    burn_down = db.relationship('BurnDown', backref='sprints', lazy=True, post_update=True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     closed = db.Column(db.Boolean)
     tasks = db.relationship('Task', backref='sprints', lazy=True)
@@ -126,4 +128,57 @@ class AcceptanceTest(db.Model):
                 'description':story.description
             },
             'approved':self.approved
+        }
+
+
+class BurnUp(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    # relacion many BurnUp - one sprint OBLIGATORIO
+    sprint_id = db.Column(db.Integer, db.ForeignKey('sprints.id'), nullable=False)
+    dia = db.Column(db.Integer)
+    realizados = db.Column(db.Integer)
+    necesarios = db.Column(db.Integer)
+    estimados = db.Column(db.Integer)
+
+    def __init__(self, sprint_id, dia, realizados, necesarios, estimados):
+        self.sprint_id = sprint_id
+        self.dia = dia
+        self.realizados = realizados
+        self.necesarios = necesarios
+        self.estimados = estimados
+
+    def serialize(self):
+        sprint = Sprint.query.get_or_404(self.sprint_id)
+        return {
+            'id': self.id, 
+            'sprint':sprint.id,
+            'dia': self.dia,
+            'realizados': self.realizados,
+            'necesarios': self.necesarios,
+            'estimados': self.estimados,
+        }
+
+
+class BurnDown(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    # relacion many BurnDown - one sprint OBLIGATORIO
+    sprint_id = db.Column(db.Integer, db.ForeignKey('sprints.id'), nullable=False)
+    dia = db.Column(db.Integer)
+    trabajo = db.Column(db.Integer)
+    disponible = db.Column(db.Integer)
+
+    def __init__(self, sprint_id, dia, trabajo, disponible):
+        self.sprint_id = sprint_id
+        self.dia = dia
+        self.trabajo = trabajo
+        self.disponible = disponible
+
+    def serialize(self):
+        sprint = Sprint.query.get_or_404(self.sprint_id)
+        return {
+            'id': self.id, 
+            'sprint':sprint.id,
+            'dia': self.dia,
+            'trabajo': self.trabajo,
+            'disponible': self.disponible,
         }

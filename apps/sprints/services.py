@@ -278,3 +278,166 @@ def update_test(test_id):
             return jsonify(test.serialize())
         except:
              return jsonify({'server': 'ERROR'})
+
+
+
+
+
+
+
+########################################################################
+
+@app.route("/burnup/getbysprint/<sprint_id>")
+def get_burnup_by_sprint(sprint_id):
+    """
+    Funcion que permitira retornar todos los
+    los Elementos burnup de un sprint
+    
+    Responde al url: /burnup/getbysprint/<sprint_id>
+    """
+    burnup = BurnUp.query.filter_by(sprint_id=sprint_id)
+    if burnup.count() >0:
+        return  jsonify([c.serialize() for c in burnup])
+    else: 
+         return jsonify({'server': 'NO_CONTENT'})
+
+
+@app.route("/burndown/getbysprint/<sprint_id>")
+def get_burndown_by_sprint(sprint_id):
+    """
+    Funcion que permitira retornar todos los
+    los Elementos burndown de un sprint
+    
+    Responde al url: /burndown/getbysprint/<sprint_id>
+    """
+    burndown = BurnDown.query.filter_by(sprint_id=sprint_id)
+    if burndown.count() >0:
+        return  jsonify([c.serialize() for c in burndown])
+    else: 
+         return jsonify({'server': 'NO_CONTENT'})
+
+
+@app.route("/burnup/add",methods=['POST'])
+def add_burnup():
+    if request.method == 'POST':
+        sprint_id=request.json.get('sprint_id')
+        dia=request.json.get('dia')
+        realizados=request.json.get('realizados')
+        necesarios=request.json.get('necesarios')
+        estimados=request.json.get('estimados')
+        
+        try:
+            burnup = BurnUp(
+                sprint_id = sprint_id,
+                dia=dia,
+                realizados = realizados,
+                necesarios = necesarios,
+                estimados = estimados,
+            )
+            db.session.add(burnup)
+            db.session.commit()
+
+            return jsonify(burnup.serialize())
+        except Exception as e:
+            print(e)            
+            return jsonify({'server': 'ERROR'})
+
+
+@app.route("/burndown/add",methods=['POST'])
+def add_burndown():
+    if request.method == 'POST':
+        sprint_id=request.json.get('sprint_id')
+        dia=request.json.get('dia')
+        trabajo=request.json.get('trabajo')
+        disponible=request.json.get('disponible')
+        
+        try:
+            burndown = BurnDown(
+                sprint_id = sprint_id,
+                dia=dia,
+                trabajo = trabajo,
+                disponible = disponible,
+            )
+            db.session.add(burndown)
+            db.session.commit()
+
+            return jsonify(burndown.serialize())
+        except Exception as e:
+            print(e)            
+            return jsonify({'server': 'ERROR'})
+
+
+
+@app.route("/burnup/update/<burnup_id>",methods= ['PUT'])
+def update_burnup(burnup_id):
+    if request.method == 'PUT':
+        burnup = BurnUp.query.get_or_404(burnup_id)
+
+        if request.json.get('dia'):
+            dia=request.json.get('dia')
+            burnup.dia=dia
+
+        if request.json.get('realizados'):
+            realizados=request.json.get('realizados')
+            burnup.realizados=realizados
+
+        if request.json.get('necesarios'):
+            necesarios=request.json.get('necesarios')
+            burnup.necesarios=necesarios
+
+        if request.json.get('estimados'):
+            estimados=request.json.get('estimados')
+            burnup.estimados=estimados
+
+        try:
+            db.session.commit()
+
+            return jsonify(burnup.serialize())
+        except:
+             return jsonify({'server': 'ERROR'})
+
+
+
+@app.route("/burndown/update/<burndown_id>",methods= ['PUT'])
+def update_burndown(burndown_id):
+    if request.method == 'PUT':
+        burndown = BurnDown.query.get_or_404(burndown_id)
+
+        if request.json.get('dia'):
+            dia=request.json.get('dia')
+            burndown.dia=dia
+
+        if request.json.get('trabajo'):
+            trabajo=request.json.get('trabajo')
+            burndown.trabajo=trabajo
+
+        if request.json.get('disponible'):
+            disponible=request.json.get('disponible')
+            burndown.disponible=disponible
+
+        try:
+            db.session.commit()
+
+            return jsonify(burndown.serialize())
+        except:
+             return jsonify({'server': 'ERROR'})
+
+
+@app.route("/burnup/delete/<burnup_id>",methods=['POST'])
+def delete_burnup(burnup_id):
+    try:
+        burn=BurnUp.query.filter_by(id=burnup_id).delete()
+        db.session.commit()
+        return jsonify(burn), 200
+    except Exception as e:
+	    return(str(e))
+
+
+@app.route("/burndown/delete/<burndown_id>",methods=['POST'])
+def delete_burndown(burndown_id):
+    try:
+        burn=BurnDown.query.filter_by(id=burndown_id).delete()
+        db.session.commit()
+        return jsonify(burn), 200
+    except Exception as e:
+	    return(str(e))

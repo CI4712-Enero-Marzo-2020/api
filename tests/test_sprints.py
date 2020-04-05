@@ -136,14 +136,7 @@ def test_get_sprints_by_project(client, init_database):
     sprint = json.loads(rv.data.decode("utf-8"))
 
     # se verifica numero de elementos y si los temporales estan entre ellos
-<<<<<<< HEAD
     assert (sprint0[0] in [elem['id'] for elem in sprint]) and (sprint1[0] in [elem['id'] for elem in sprint])
-=======
-    assert (sprint0[0] in [elem["id"] for elem in sprint]) and (
-        sprint1[0] in [elem["id"] for elem in sprint]
-    )
-    assert len(sprint) == 2
->>>>>>> 99f8603dde10375039f941361790957df5edcebf
     app.db.session.commit()
 
 
@@ -414,7 +407,6 @@ def test_update_test(client, init_database):
     url = "/test/update/" + str(a_test0[0])
 
     response = client.put(url, json=data)
-<<<<<<< HEAD
     
     response_json = json.loads(response.data.decode('utf-8'))
     new_test = AcceptanceTest.query.get(response_json['id'])
@@ -581,13 +573,6 @@ def test_delete_burdown(client, init_database):
     deleted_test = BurnDown.query.get(burn0[0])
 
     assert deleted_test is None
-=======
-
-    response_json = json.loads(response.data.decode("utf-8"))
-    new_test = AcceptanceTest.query.get(response_json["id"])
-
-    assert new_test.description == "Test correction"
->>>>>>> 99f8603dde10375039f941361790957df5edcebf
     app.db.session.commit()
 
 

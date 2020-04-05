@@ -4,38 +4,43 @@ from app import db
 from apps.user.models import *
 from apps.projects.models import *
 
+
 class StoryPriority(enum.Enum):
-    high = 'high'
-    medium = 'medium'
-    low = 'low'
+    high = "high"
+    medium = "medium"
+    low = "low"
 
 
 class Story(db.Model):
-    __tablename__ = 'stories'
+    __tablename__ = "stories"
 
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text)
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'))
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
     priority = db.Column(
-        db.Enum(StoryPriority), 
-        default= StoryPriority.high,
-        nullable=False
+        db.Enum(StoryPriority), default=StoryPriority.high, nullable=False
     )
     epic = db.Column(db.Boolean)
     done = db.Column(db.Boolean)
     estimation = db.Column(db.Integer)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     ###### RELACIONES CON SPRINT
     # relacion one story - one sprint OPCIONAL
-    sprint_id = db.Column(db.Integer, db.ForeignKey('sprints.id'), nullable=True)
-    
+    sprint_id = db.Column(db.Integer, db.ForeignKey("sprints.id"), nullable=True)
+
     # # relacion one story - many criterias
-    criteria = db.relationship('AcceptanceCriteria', backref='stories', lazy=True, post_update=True)
+    criteria = db.relationship(
+        "AcceptanceCriteria", backref="stories", lazy=True, post_update=True
+    )
     # # relacion one story - many tests
-    tests = db.relationship('AcceptanceTest', backref='stories', lazy=True, post_update=True)
+    tests = db.relationship(
+        "AcceptanceTest", backref="stories", lazy=True, post_update=True
+    )
     # tasks = db.relationship('Task', backref='stories', lazy=True, post_update=True)
 
+    parent_id = db.Column(db.Integer, db.ForeignKey("stories.id"))
+    children = db.relationship("Story", lazy="joined")
 
     parent_id = db.Column(db.Integer, db.ForeignKey('stories.id'))
     children = db.relationship('Story', lazy='joined')
@@ -43,14 +48,14 @@ class Story(db.Model):
     def __init__(self,project_id,description,priority,epic, estimation,sprint_id=None):
         self.description = description
         self.project_id = project_id
-        self.priority =  priority
+        self.priority = priority
         self.epic = epic
         self.estimation = estimation
         self.done = False 
         self.sprint_id = sprint_id 
 
     def __repr__(self):
-        return '<id {}>'.format(self.id)
+        return "<id {}>".format(self.id)
 
     def serialize(self):
         return {
@@ -64,6 +69,3 @@ class Story(db.Model):
             'date_created':self.date_created,
             'parent_id':self.parent_id
         }
-
-
-

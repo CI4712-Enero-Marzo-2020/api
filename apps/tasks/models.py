@@ -6,6 +6,8 @@ from apps.user.models import assign, UserA
 from apps.sprints.models import *
 from sqlalchemy.orm import relationship
 import json
+
+
 class TaskType(enum.Enum):
     develop = "Desarrollo"
     design = "Diseño"
@@ -25,8 +27,9 @@ class TaskClass(enum.Enum):
     middle = "Media"
     hard = "Compleja"
 
+
 class Task(db.Model):
-    __tablename__ = 'tasks'
+    __tablename__ = "tasks"
 
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text)
@@ -70,17 +73,19 @@ class Task(db.Model):
         self.users = users
 
     def __repr__(self):
-        return '<id {}>'.format(self.id)
+        return "<id {}>".format(self.id)
 
     def serialize(self):
         users = []
         try:
             # assignees = db.query(assign).filter(task_id == self.id)
-            resultado = db.engine.execute('select * from assign where task_id ='+str(self.id)+';')
+            resultado = db.engine.execute(
+                "select * from assign where task_id =" + str(self.id) + ";"
+            )
             for row in resultado:
                 user = UserA.query.get_or_404(row.user_id)
-                users.append({"id":user.id,"username":user.username})
-        except ValueError :
+                users.append({"id": user.id, "username": user.username})
+        except ValueError:
             pass
       
         return{

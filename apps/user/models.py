@@ -14,7 +14,6 @@ class UserA(db.Model):
     logger = db.relationship('Logger', backref='userA') 
     sprint = db.relationship('Sprint', backref='userA')
     teams = db.relationship('Team', secondary="users")
-
     def __init__(self,username,first_name,last_name,role,password):
         self.username = username
         self.first_name = first_name

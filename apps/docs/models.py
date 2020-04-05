@@ -44,6 +44,56 @@ class Documentation(db.Model):
             'metaphor':self.metaphor
         }
 
+class Revisions(db.Model):
+    __tablename__ = 'revisions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    doc_id = db.Column(db.Integer, db.ForeignKey('documentation.id'))
+    version = db.Column(db.Float, nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    date = db.Column(db.Text, nullable=False)
+    teams = db.Column(db.Text, nullable=False)
+
+    def __init__(self, doc, date, ver, desc, teams):
+        self.doc_id = doc
+        self.date = date
+        self.version = ver
+        self.description = desc
+        self.teams = teams
+    
+    def serialize(self):
+        return {
+            'doc_id': self.doc_id,
+            'date':self.date,
+            'version':self.version,
+            'description':self.description,
+            'teams':self.teams,
+        }
+
+
+class TeamLeaders(db.Model):
+    __tablename__ = 'teamLeaders'
+
+    id = db.Column(db.Integer, primary_key=True)
+    doc_id = db.Column(db.Integer, db.ForeignKey('documentation.id'))
+    productO_id = db.Column(db.Integer, db.ForeignKey('userA.id'))
+    scrumM_id = db.Column(db.Integer, db.ForeignKey('userA.id'))
+
+    def __init__(self, doc, pO, sM):
+        self.doc_id = doc
+        self.productO_id = pO
+        self.scrumM_id = sM
+    
+    def serialize(self):
+        pO = UserA.query.filter_by(id=self.productO_id).first().serialize()
+        sM = UserA.query.filter_by(id=self.scrumM_id).first().serialize()
+        return {
+            'doc_id': self.doc_id,
+            'product_owner':pO,
+            'scrum_master':sM
+        }
+    
+
 class Teams(db.Model):
     __tablename__ = 'teams'  
 
@@ -315,6 +365,81 @@ class Foundation(db.Model):
 
 class Values(db.Model):
     __tablename__ = 'values'
+
+    id = db.Column(db.Integer, primary_key=True)
+    doc_id = db.Column(db.Integer, db.ForeignKey('documentation.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+
+    def __init__(self, doc_id, content):
+        self.doc_id = doc_id
+        self.content = content
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+    
+    def serialize(self):
+        doc = Documentation.query.get_or_404(self.doc_id)
+        return {
+            'id': self.id, 
+            'doc': {
+                'id' : str(doc.id),
+                'name':doc.name
+            },
+            'content':self.content
+        }
+
+class Recomendations(db.Model):
+    __tablename__ = 'recomendations'
+
+    id = db.Column(db.Integer, primary_key=True)
+    doc_id = db.Column(db.Integer, db.ForeignKey('documentation.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+
+    def __init__(self, doc_id, content):
+        self.doc_id = doc_id
+        self.content = content
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+    
+    def serialize(self):
+        doc = Documentation.query.get_or_404(self.doc_id)
+        return {
+            'id': self.id, 
+            'doc': {
+                'id' : str(doc.id),
+                'name':doc.name
+            },
+            'content':self.content
+        }
+
+class Thanks(db.Model):
+    __tablename__ = 'thanks'
+
+    id = db.Column(db.Integer, primary_key=True)
+    doc_id = db.Column(db.Integer, db.ForeignKey('documentation.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+
+    def __init__(self, doc_id, content):
+        self.doc_id = doc_id
+        self.content = content
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+    
+    def serialize(self):
+        doc = Documentation.query.get_or_404(self.doc_id)
+        return {
+            'id': self.id, 
+            'doc': {
+                'id' : str(doc.id),
+                'name':doc.name
+            },
+            'content':self.content
+        }
+
+class Conclutions(db.Model):
+    __tablename__ = 'conclutions'
 
     id = db.Column(db.Integer, primary_key=True)
     doc_id = db.Column(db.Integer, db.ForeignKey('documentation.id'), nullable=False)

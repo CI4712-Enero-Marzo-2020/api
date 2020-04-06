@@ -112,7 +112,8 @@ def login():
     # Identity can be any data that is json serializable
     tokens = {
         'access_token': create_access_token(identity=username, expires_delta=expires),
-        'refresh_token': create_refresh_token(identity=username)
+        'refresh_token': create_refresh_token(identity=username),
+        'userId': user.id,
     }
 
     ############Agregando evento al logger####################

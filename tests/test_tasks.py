@@ -31,7 +31,7 @@ def add_temp_sprint(user, description, project, closed, end_date):
         return str(e)
 
 
-def add_temp_task(description, sprint_id, task_type, task_status, task_class, user_id):
+def add_temp_task(description, sprint_id, task_type, task_status, task_class, user_id, worstCase, mostLikely, bestCase, est_time, users = None):
     try:
         task = Task(
             user_id=user_id,
@@ -40,6 +40,13 @@ def add_temp_task(description, sprint_id, task_type, task_status, task_class, us
             task_type=task_type,
             task_status=task_status,
             task_class=task_class,
+            worstCase=worstCase,
+            mostLikely=mostLikely,
+            bestCase=bestCase,
+            est_time=est_time,
+            users=users
+
+
         )
         db.session.add(task)
         db.session.commit()
@@ -58,6 +65,11 @@ def test_get_taskBySprint(client, init_database):
         TaskStatus.init,
         TaskClass.hard,
         1,
+        2,
+        3,
+        4,
+        1,
+        1
     )
     task1 = add_temp_task(
         "test description2",
@@ -66,6 +78,11 @@ def test_get_taskBySprint(client, init_database):
         TaskStatus.init,
         TaskClass.hard,
         1,
+        2,
+        3,
+        4,
+        1,
+        1
     )
 
     # se llama al servicio
@@ -94,6 +111,11 @@ def test_delete_task(client, init_database):
         TaskStatus.init,
         TaskClass.hard,
         1,
+        2,
+        3,
+        4,
+        1,
+        1
     )
 
     # se llama al servicio

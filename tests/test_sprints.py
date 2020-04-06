@@ -35,7 +35,7 @@ def add_temp_sprint(user, description, project, closed, end_date):
         return str(e)
 
 
-def add_temp_story(description, project_id, priority, epic, sprint_id=None):
+def add_temp_story(description, project_id, priority, epic,estimation, sprint_id=None):
     try:
         story = Story(
             description=description,
@@ -43,6 +43,7 @@ def add_temp_story(description, project_id, priority, epic, sprint_id=None):
             priority=priority,
             epic=epic,
             sprint_id=sprint_id,
+            estimation=estimation
         )
         db.session.add(story)
         db.session.commit()
@@ -183,12 +184,13 @@ def test_get_stories_by_sprint(client, init_database):
     sprint0 = add_temp_sprint(1, "test description", 1, False, "01/01/2020")
 
     story0 = add_temp_story(
-        "test_description", 1, StoryPriority.high, False, sprint0[0]
+        "test_description", 1, StoryPriority.high, False,1, sprint0[0]
     )
     story1 = add_temp_story(
-        "test_description", 1, StoryPriority.medium, False, sprint0[0]
+        "test_description", 1, StoryPriority.medium, False,1, sprint0[0]
     )
 
+    print('chao',story1)
     # se llama al servicio
     rv = client.get("/sprint/getstories/" + str(sprint0[0]))
 
@@ -205,7 +207,7 @@ def test_get_stories_by_sprint(client, init_database):
 
 def test_get_criteria_by_story(client, init_database):
     # creando sprint e historias temporales asociadas
-    story0 = add_temp_story("test_description", 1, StoryPriority.high, False)
+    story0 = add_temp_story("test_description", 1, StoryPriority.high,1, False)
 
     a_creiteria0 = add_temp_acceptcriteria(1, "Test description1", story0[0], False)
     a_creiteria1 = add_temp_acceptcriteria(1, "Test description2", story0[0], False)
@@ -226,7 +228,7 @@ def test_get_criteria_by_story(client, init_database):
 
 def test_get_tests_by_story(client, init_database):
     # creando sprint e historias temporales asociadas
-    story0 = add_temp_story("test_description", 1, StoryPriority.high, False)
+    story0 = add_temp_story("test_description", 1, StoryPriority.high,1, False)
 
     a_test0 = add_temp_accepttests(1, "Test description1", story0[0], False)
     a_test1 = add_temp_accepttests(1, "Test description2", story0[0], False)
@@ -268,7 +270,7 @@ def test_add_sprint(client, init_database):
 
 def test_add_criteria(client, init_database):
 
-    story0 = add_temp_story("test_description", 1, StoryPriority.high, False)
+    story0 = add_temp_story("test_description", 1, StoryPriority.high,1, False)
 
     data = dict(story_id=story0[0], description="Test description", user_id=1,)
     url = "/criteria/add"
@@ -285,7 +287,7 @@ def test_add_criteria(client, init_database):
 
 def test_delete_criteria(client, init_database):
     # creando story y criterias temporales asociadas
-    story0 = add_temp_story("test_description", 1, StoryPriority.high, False)
+    story0 = add_temp_story("test_description", 1, StoryPriority.high,1, False)
 
     a_creiteria0 = add_temp_acceptcriteria(1, "Test description1", story0[0], False)
 
@@ -305,7 +307,7 @@ def test_delete_criteria(client, init_database):
 
 def test_add_accepttests(client, init_database):
 
-    story0 = add_temp_story("test_description", 1, StoryPriority.high, False)
+    story0 = add_temp_story("test_description", 1, StoryPriority.high,1, False)
 
     data = dict(story_id=story0[0], description="Test description", user_id=2,)
     url = "/tests/add"
@@ -322,7 +324,7 @@ def test_add_accepttests(client, init_database):
 
 def test_delete_accepttests(client, init_database):
     # creando story y criterias temporales asociadas
-    story0 = add_temp_story("test_description", 1, StoryPriority.high, False)
+    story0 = add_temp_story("test_description", 1, StoryPriority.high,1, False)
 
     test0 = add_temp_accepttests(1, "Test description1", story0[0], False)
 
@@ -343,7 +345,7 @@ def test_delete_accepttests(client, init_database):
 def add_story_to_sprint(client, init_database):
     # creando sprint temporal
     sprint0 = add_temp_sprint(1, "test description", 1, False, "01/01/2020")
-    story0 = add_temp_story("test_description", 1, StoryPriority.high, False)
+    story0 = add_temp_story("test_description", 1, StoryPriority.high,1, False)
 
     # se llama al servicio
     rv = client.post("/sprint/addstory/" + str(sprint0[0]) + "/" + str(story0[0]))
@@ -382,7 +384,7 @@ def test_update_sprint(client, init_database):
 def test_update_criteria(client, init_database):
 
     # creando story y criterias temporales asociadas
-    story0 = add_temp_story("test_description", 1, StoryPriority.high, False)
+    story0 = add_temp_story("test_description", 1, StoryPriority.high,1, False)
     a_creiteria0 = add_temp_acceptcriteria(1, "Test description1", story0[0], False)
 
     data = dict(story_id=story0[0], description="Test correction", user_id=1,)
@@ -400,7 +402,7 @@ def test_update_criteria(client, init_database):
 def test_update_test(client, init_database):
 
     # creando story y criterias temporales asociadas
-    story0 = add_temp_story("test_description", 1, StoryPriority.high, False)
+    story0 = add_temp_story("test_description", 1, StoryPriority.high,1, False)
     a_test0 = add_temp_accepttests(1, "Test description1", story0[0], False)
 
     data = dict(story_id=story0[0], description="Test correction", user_id=1,)
